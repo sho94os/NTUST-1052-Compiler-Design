@@ -16,10 +16,12 @@ char strbuf[MAX_LINE_LENGTH];
 
 %s STRING LINE_COMMENT
 
-digit   [0-9]
-alpha   [A-Za-z]
-blank   [ \t]
-newline \r?\n
+digit    [0-9]
+decimals {digit}+
+exponent [eE]["+"-]?{decimals}
+alpha    [A-Za-z]
+blank    [ \t]
+newline  \r?\n
 
 %%
 
@@ -98,11 +100,23 @@ newline \r?\n
 
  /** Identifier **/
 
-<INITIAL>{alpha}({digit}|{alpha})* {
+<INITIAL>{alpha}({alpha}|{digit}|_)* {
     tokenString(T_ID, yytext);
 }
 
- /** String Constant **/
+ /** Interger Literal **/
+
+<INITIAL>{decimals} {
+    tokenInteger(T_INTEGER_LITERAL, atoi(yytext))
+}
+
+ /** Real Literal **/
+
+<INITIAL>["+"-]?({decimals}"."{decimals}?{exponent}?|"."{decimals}{exponent}?|{decimals}{exponent}) {
+    tokenString(T_REAL_LITERAL, yytext)
+}
+
+ /** String Literal **/
 
 <INITIAL>\" {
     LIST;
@@ -115,6 +129,11 @@ newline \r?\n
     tokenString(T_STRING_LITERAL, strbuf);
     strbuf[0] = '\0';
     BEGIN INITIAL;
+}
+
+<STRING>\"\" {
+    LIST;
+    strcat(strbuf, "\"");
 }
 
 <STRING>. {

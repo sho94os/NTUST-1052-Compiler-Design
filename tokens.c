@@ -11,9 +11,6 @@ const char* get_token_name(char token) {
         case T_INTEGER_LITERAL:
             strcpy(token_name, TNAME_INTEGER_LITERAL);
             break;
-        case T_BOOLEAN_LITERAL:
-            strcpy(token_name, TNAME_BOOLEAN_LITERAL);
-            break;
         case T_REAL_LITERAL:
             strcpy(token_name, TNAME_REAL_LITERAL);
             break;

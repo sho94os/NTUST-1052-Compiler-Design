@@ -8,9 +8,8 @@
 /** Literals (0a-0f) **/
 
 #define T_INTEGER_LITERAL            0x0a
-#define T_BOOLEAN_LITERAL            0x0b
-#define T_REAL_LITERAL               0x0c
-#define T_STRING_LITERAL             0x0d
+#define T_REAL_LITERAL               0x0b
+#define T_STRING_LITERAL             0x0c
 
 /** Delimiters (as ASCII code) **/
 
@@ -86,7 +85,6 @@
 
 #define TNAME_ID                         "id"
 #define TNAME_INTEGER_LITERAL            "integer"
-#define TNAME_BOOLEAN_LITERAL            "boolean"
 #define TNAME_REAL_LITERAL               "real"
 #define TNAME_STRING_LITERAL             "string"
 #define TNAME_COMMA                      "','"
