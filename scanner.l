@@ -14,7 +14,7 @@ char buf[MAX_LINE_LENGTH];
 char strbuf[MAX_LINE_LENGTH];
 %}
 
-%s STRING LINE_COMMENT
+%s STRING LINE_COMMENT BLOCK_COMMENT
 
 digit    [0-9]
 decimals {digit}+
@@ -152,12 +152,32 @@ newline  \r?\n
     LIST;
 }
 
+<INITIAL>"/*" {
+    LIST;
+    BEGIN BLOCK_COMMENT;
+}
+
+<BLOCK_COMMENT>. {
+    LIST;
+}
+
+<BLOCK_COMMENT>"*/" {
+    LIST;
+    BEGIN INITIAL;
+}
+
  /** New Line **/
 
 <LINE_COMMENT>{newline} |
 <INITIAL>{newline} {
     LIST;
     BEGIN INITIAL;
+    printf("%d: %s", linenum++, buf);
+    buf[0] = '\0';
+}
+
+<BLOCK_COMMENT>{newline} {
+    LIST;
     printf("%d: %s", linenum++, buf);
     buf[0] = '\0';
 }
