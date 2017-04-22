@@ -25,15 +25,42 @@ newline \r?\n
 
  /** Delimiters **/
 
-<INITIAL>","                    { token(','); }
-<INITIAL>":"                    { token(':'); }
-<INITIAL>";"                    { token(';'); }
-<INITIAL>"("                    { token('('); }
-<INITIAL>")"                    { token(')'); }
-<INITIAL>"["                    { token('['); }
-<INITIAL>"]"                    { token(']'); }
-<INITIAL>"{"                    { token('{'); }
-<INITIAL>"}"                    { token('}'); }
+<INITIAL>","                    { token(T_COMMA); }
+<INITIAL>":"                    { token(T_COLON); }
+<INITIAL>";"                    { token(T_SEMICOLON); }
+<INITIAL>"("                    { token(T_LEFT_PARENTHESIS); }
+<INITIAL>")"                    { token(T_RIGHT_PARENTHESIS); }
+<INITIAL>"["                    { token(T_LEFT_SQUARE_BRACKET); }
+<INITIAL>"]"                    { token(T_RIGHT_SQUARE_BRACKET); }
+<INITIAL>"{"                    { token(T_LEFT_BRACKET); }
+<INITIAL>"}"                    { token(T_RIGHT_BRACKET); }
+
+ /** Arithmetic, Relational, and Logical Operators **/
+
+<INITIAL>"+"                    { token(T_ADDITION); }
+<INITIAL>"-"                    { token(T_SUBTRACTION); }
+<INITIAL>"/"                    { token(T_DIVISION); }
+<INITIAL>"*"                    { token(T_MULTIPLICATION); }
+<INITIAL>"^"                    { token(T_EXPONENTIATION); }
+<INITIAL>"%"                    { token(T_REMAINDER); }
+
+<INITIAL>"=="                   { token(T_EQUAL_TO); }
+<INITIAL>"!="                   { token(T_NOT_EQUAL_TO); }
+<INITIAL>">"                    { token(T_GREATER_THAN); }
+<INITIAL>"<"                    { token(T_LESS_THAN); }
+<INITIAL>">="                   { token(T_GREATER_THAN_OR_EQUAL_TO); }
+<INITIAL>"<="                   { token(T_LESS_THAN_OR_EQUAL_TO); }
+
+<INITIAL>"&&"                   { token(T_LOGICAL_AND); }
+<INITIAL>"||"                   { token(T_LOGICAL_OR); }
+<INITIAL>"!"                    { token(T_LOGICAL_NOT); }
+
+<INITIAL>"="                    { token(T_ASSIGNMENT); }
+
+<INITIAL>"+="                   { token(T_ADDITION_ASSIGNMENT); }
+<INITIAL>"-="                   { token(T_SUBTRACTION_ASSIGNMENT); }
+<INITIAL>"*="                   { token(T_MULTIPLICATION_ASSIGNMENT); }
+<INITIAL>"/="                   { token(T_DIVISION_ASSIGNMENT); }
 
  /** Keywords **/
 
@@ -64,6 +91,10 @@ newline \r?\n
 <INITIAL>"var"                  { token(T_VAR); }
 <INITIAL>"void"                 { token(T_VOID); }
 <INITIAL>"while".               { token(T_WHILE); }
+
+ /** Blank **/
+
+<INITIAL>{blank}*                        { LIST; }
 
  /** Identifier **/
 
@@ -101,10 +132,6 @@ newline \r?\n
 <LINE_COMMENT>. {
     LIST;
 }
-
- /** Blank **/
-
-{blank}*                        { LIST; }
 
  /** New Line **/
 
