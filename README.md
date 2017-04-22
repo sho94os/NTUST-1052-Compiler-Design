@@ -10,3 +10,8 @@ System Dependencies
 - make
 - gcc
 - lex
+
+### Only for testing
+
+- check
+- checkmk

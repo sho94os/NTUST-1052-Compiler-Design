@@ -1,0 +1,97 @@
+#include "../src/symbol_table.h"
+
+#suite Symbol Table
+
+#tcase Creation of a symbol table
+
+#test test_symbol_table_create
+    symbol_table_t *t = symbol_table_create();
+
+#tcase Insertion and lookup of a symbol table
+
+#test test_symbol_table_insert_lookup_same_index
+    symbol_table_t *t = symbol_table_create();
+    int foo_index = symbol_table_insert(t, "foo");
+    int bar_index = symbol_table_insert(t, "bar");
+    ck_assert_int_eq(foo_index, symbol_table_lookup(t, "foo"));
+    ck_assert_int_eq(bar_index, symbol_table_lookup(t, "bar"));
+
+#test test_symbol_table_mass_insert_lookup_same_index
+    symbol_table_t *t = symbol_table_create();
+    int id_01_index = symbol_table_insert(t, "id_01");
+    int id_02_index = symbol_table_insert(t, "id_02");
+    int id_03_index = symbol_table_insert(t, "id_03");
+    int id_04_index = symbol_table_insert(t, "id_04");
+    int id_05_index = symbol_table_insert(t, "id_05");
+    int id_06_index = symbol_table_insert(t, "id_06");
+    int id_07_index = symbol_table_insert(t, "id_07");
+    int id_08_index = symbol_table_insert(t, "id_08");
+    int id_09_index = symbol_table_insert(t, "id_09");
+    int id_10_index = symbol_table_insert(t, "id_10");
+    int id_11_index = symbol_table_insert(t, "id_11");
+    int id_12_index = symbol_table_insert(t, "id_12");
+    int id_13_index = symbol_table_insert(t, "id_13");
+    int id_14_index = symbol_table_insert(t, "id_14");
+    int id_15_index = symbol_table_insert(t, "id_15");
+    int id_16_index = symbol_table_insert(t, "id_16");
+    ck_assert_int_eq(id_01_index, symbol_table_lookup(t, "id_01"));
+    ck_assert_int_eq(id_02_index, symbol_table_lookup(t, "id_02"));
+    ck_assert_int_eq(id_03_index, symbol_table_lookup(t, "id_03"));
+    ck_assert_int_eq(id_04_index, symbol_table_lookup(t, "id_04"));
+    ck_assert_int_eq(id_05_index, symbol_table_lookup(t, "id_05"));
+    ck_assert_int_eq(id_06_index, symbol_table_lookup(t, "id_06"));
+    ck_assert_int_eq(id_07_index, symbol_table_lookup(t, "id_07"));
+    ck_assert_int_eq(id_08_index, symbol_table_lookup(t, "id_08"));
+    ck_assert_int_eq(id_09_index, symbol_table_lookup(t, "id_09"));
+    ck_assert_int_eq(id_10_index, symbol_table_lookup(t, "id_10"));
+    ck_assert_int_eq(id_11_index, symbol_table_lookup(t, "id_11"));
+    ck_assert_int_eq(id_12_index, symbol_table_lookup(t, "id_12"));
+    ck_assert_int_eq(id_13_index, symbol_table_lookup(t, "id_13"));
+    ck_assert_int_eq(id_14_index, symbol_table_lookup(t, "id_14"));
+    ck_assert_int_eq(id_15_index, symbol_table_lookup(t, "id_15"));
+    ck_assert_int_eq(id_16_index, symbol_table_lookup(t, "id_16"));
+
+#test test_symbol_table_insert_unique_index
+    symbol_table_t *t = symbol_table_create();
+    int index_foo = symbol_table_insert(t, "foo");
+    int index_bar = symbol_table_insert(t, "bar");
+    int index_baz = symbol_table_insert(t, "baz");
+    ck_assert_int_ne(index_foo, index_bar);
+    ck_assert_int_ne(index_bar, index_baz);
+
+#test test_symbol_table_insert_lookup_unknown
+    symbol_table_t *t = symbol_table_create();
+    ck_assert_int_eq(symbol_table_lookup(t, "unknown_id"), -1);
+
+#tcase Dumping a symbol table
+
+#test test_symbol_table_dump_str
+    symbol_table_t *t = symbol_table_create();
+    int index_foo = symbol_table_insert(t, "foo");
+    int index_bar = symbol_table_insert(t, "bar");
+    int index_baz = symbol_table_insert(t, "baz");
+    char *dump = symbol_table_dump_str(t);
+    char *expected_dump = "0 foo\n1 bar\n2 baz\n";
+    ck_assert_str_eq(dump, expected_dump);
+
+#test test_mass_symbol_table_dump_str
+    symbol_table_t *t = symbol_table_create();
+    int id_01_index = symbol_table_insert(t, "id_01");
+    int id_02_index = symbol_table_insert(t, "id_02");
+    int id_03_index = symbol_table_insert(t, "id_03");
+    int id_04_index = symbol_table_insert(t, "id_04");
+    int id_05_index = symbol_table_insert(t, "id_05");
+    int id_06_index = symbol_table_insert(t, "id_06");
+    int id_07_index = symbol_table_insert(t, "id_07");
+    int id_08_index = symbol_table_insert(t, "id_08");
+    int id_09_index = symbol_table_insert(t, "id_09");
+    int id_10_index = symbol_table_insert(t, "id_10");
+    int id_11_index = symbol_table_insert(t, "id_11");
+    int id_12_index = symbol_table_insert(t, "id_12");
+    int id_13_index = symbol_table_insert(t, "id_13");
+    int id_14_index = symbol_table_insert(t, "id_14");
+    int id_15_index = symbol_table_insert(t, "id_15");
+    int id_16_index = symbol_table_insert(t, "id_16");
+    char *dump = symbol_table_dump_str(t);
+    char *expected_dump = "0 id_01\n1 id_02\n2 id_03\n3 id_04\n4 id_05\n5 id_06\n6 id_07\n7 id_08\n8 id_09\n9 id_10\n10 id_11\n11 id_12\n12 id_13\n13 id_14\n14 id_15\n15 id_16\n";
+    ck_assert_str_eq(dump, expected_dump);

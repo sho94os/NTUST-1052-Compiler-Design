@@ -1,3 +1,5 @@
 /bin/scanner
 /src/lex.yy.c
+/tests/*-check.c
+/tests/*-check
 *.o

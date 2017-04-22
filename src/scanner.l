@@ -92,11 +92,11 @@ newline  \r?\n
 <INITIAL>"type"                 { token(T_TYPE); }
 <INITIAL>"var"                  { token(T_VAR); }
 <INITIAL>"void"                 { token(T_VOID); }
-<INITIAL>"while".               { token(T_WHILE); }
+<INITIAL>"while"                { token(T_WHILE); }
 
  /** Blank **/
 
-<INITIAL>{blank}*                        { LIST; }
+<INITIAL>{blank}*               { LIST; }
 
  /** Identifier **/
 
