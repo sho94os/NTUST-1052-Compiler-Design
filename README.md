@@ -1,17 +1,33 @@
 NTUST Compiler Design Project
 =============================
 
-This project is a simple compiler implementation of a Golang-like programming language.
+This project is a simple compiler implementation of a Golang-like
+programming language.
 
 
-System Dependencies
--------------------
+Building
+--------
 
-- make
-- gcc
-- lex
+`make`, `gcc` and `lex` are required to build this project:
 
-### Only for testing
+```bash
+$ make
+```
 
-- check
-- checkmk
+the compiled executable will be placed under `bin/` in the project directory.
+
+To clean the project directory, run:
+
+```bash
+$ make clean
+```
+
+
+Testing
+-------
+
+To run C unit tests, `check` and `checkmk` are needed.
+
+```bash
+$ make test
+```
