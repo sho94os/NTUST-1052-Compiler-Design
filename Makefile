@@ -12,5 +12,5 @@ scanner.o: lex.yy.c
 lex.yy.c: scanner.l
 	lex scanner.l
 
-%.o: %.cpp
-	gcc -c $< -o %@
+%.o: %.c %.h
+	gcc -c $< -o $@
