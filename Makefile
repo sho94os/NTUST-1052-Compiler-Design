@@ -1,4 +1,4 @@
-TESTS = symbol_table-check
+TESTS = tokens-check symbol_table-check
 
 .SECONDARY:
 .PHONY: clean test

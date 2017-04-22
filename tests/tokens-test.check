@@ -1,0 +1,20 @@
+#include "../src/tokens.h"
+
+#suite Token Utils
+
+#tcase Get the token name of a token
+
+#test test_get_token_name_id
+    ck_assert_str_eq(get_token_name(T_ID), "id");
+
+#test test_get_token_name_integer_literal
+    ck_assert_str_eq(get_token_name(T_INTEGER_LITERAL), "integer");
+
+#test test_get_token_name_real_literal
+    ck_assert_str_eq(get_token_name(T_REAL_LITERAL), "real");
+
+#test test_get_token_name_string_literal
+    ck_assert_str_eq(get_token_name(T_STRING_LITERAL), "string");
+
+#test test_get_token_name_comma
+    ck_assert_str_eq(get_token_name(T_COMMA), "','");
