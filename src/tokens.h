@@ -1,6 +1,8 @@
 #ifndef TOKENS_H
 #define TOKENS_H
 
+typedef char token_t;
+
 /** Identifier (01) **/
 
 #define T_ID                         0x01
@@ -144,6 +146,6 @@
 #define TNAME_VOID                       "VOID"
 #define TNAME_WHILE                      "WHILE"
 
-const char* get_token_name(char token);
+const char* get_token_name(token_t token);
 
 #endif

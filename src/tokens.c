@@ -1,7 +1,7 @@
 #include <string.h>
 #include "tokens.h"
 
-const char* get_token_name(char token) {
+const char* get_token_name(token_t token) {
     static char token_name[16];
 
     switch (token) {
