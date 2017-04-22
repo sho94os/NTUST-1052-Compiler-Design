@@ -81,7 +81,7 @@ newline \r?\n
 
 <STRING>\" {
     LIST;
-    tokenString(T_STRING, strbuf);
+    tokenString(T_STRING_LITERAL, strbuf);
     strbuf[0] = '\0';
     BEGIN INITIAL;
 }
@@ -128,6 +128,6 @@ newline \r?\n
 %%
 
 int main(int argc, char **argv) {
-  yylex();
-  exit(0);
+    yylex();
+    exit(0);
 }
