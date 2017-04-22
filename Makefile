@@ -1,16 +1,16 @@
-all: scanner
+all: bin/scanner
 
 clean:
-	rm *.o lex.yy.c scanner
+	rm -f bin/scanner src/*.o src/lex.yy.c
 
-scanner: scanner.o tokens.o
-	gcc $^ -ll -o $@
+bin/scanner: src/scanner.o src/tokens.o
+	gcc -o $@ $^ -ll
 
-scanner.o: lex.yy.c
-	gcc -c lex.yy.c -o scanner.o
+src/scanner.o: src/lex.yy.c
+	gcc -o $@ -c $^
 
-lex.yy.c: scanner.l
-	lex scanner.l
+src/lex.yy.c: src/scanner.l
+	lex -o $@ $<
 
-%.o: %.c %.h
-	gcc -c $< -o $@
+src/%.o: src/%.c src/%.h
+	gcc -o $@ -c $<
