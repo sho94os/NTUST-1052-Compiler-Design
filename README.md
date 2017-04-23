@@ -1,8 +1,17 @@
 NTUST Compiler Design Project
 =============================
 
-This project is a simple compiler implementation of a Golang-like
-programming language.
+This project is a lex scanner implementation of Go¯:
+a simple Go programming language.
+
+Usage
+-----
+
+Example usage of the scanner:
+
+```bash
+$ bin/scanner < tests/fixtures/example.go
+```
 
 
 Building
