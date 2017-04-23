@@ -1,5 +1,6 @@
 %{
 #include "tokens.h"
+#include "symbol_table.h"
 
 #define LIST { strcat(buf, yytext); }
 
@@ -12,6 +13,7 @@
 int linenum = 1;
 char buf[MAX_LINE_LENGTH];
 char strbuf[MAX_LINE_LENGTH];
+symbol_table_t *symbol_table;
 %}
 
 %s STRING LINE_COMMENT BLOCK_COMMENT
@@ -101,6 +103,7 @@ newline  \r?\n
  /** Identifier **/
 
 <INITIAL>{alpha}({alpha}|{digit}|_)* {
+    symbol_table_insert(symbol_table, yytext);
     tokenString(T_ID, yytext);
 }
 
@@ -194,6 +197,12 @@ newline  \r?\n
 %%
 
 int main(int argc, char **argv) {
+    symbol_table = symbol_table_create();
+
     yylex();
+
+    printf("\nSymbol Table:\n");
+    printf("%s", symbol_table_dump_str(symbol_table));
+
     exit(0);
 }

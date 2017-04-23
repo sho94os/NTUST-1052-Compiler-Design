@@ -10,7 +10,7 @@ test: $(TESTS)
 clean:
 	rm -f */*.o bin/scanner src/lex.yy.c tests/*-check tests/*-check.c
 
-bin/scanner: src/scanner.o src/tokens.o
+bin/scanner: src/scanner.o src/tokens.o src/symbol_table.o
 	gcc -o $@ $^ -ll
 
 src/scanner.o: src/lex.yy.c
