@@ -40,6 +40,9 @@ symbol_table_t* symbol_table_create() {
 }
 
 int symbol_table_insert(symbol_table_t* symbol_table, char* identifier) {
+    int lookup_index = symbol_table_lookup(symbol_table, identifier);
+    if (lookup_index >= 0) return lookup_index;
+
     symbol_table_entry_t *entry = malloc(sizeof(symbol_table_entry_t));
     entry->next = NULL;
     entry->index = symbol_table->size;
@@ -103,7 +106,7 @@ char* symbol_table_dump_str(symbol_table_t* symbol_table) {
         char *ptr = dump + i * MAX_IDENTIFIER_LENGTH;
         sprintf(buf, "%d", i);
         strcat(dump_str, buf);
-        strcat(dump_str, " ");
+        strcat(dump_str, "\t");
         strcat(dump_str, ptr);
         strcat(dump_str, "\n");
     }
