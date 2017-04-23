@@ -128,7 +128,6 @@ newline  \r?\n
 }
 
 <STRING>\" {
-    LIST;
     tokenString(T_STRING_LITERAL, strbuf);
     strbuf[0] = '\0';
     BEGIN INITIAL;
