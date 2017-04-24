@@ -97,18 +97,15 @@ char* symbol_table_dump(symbol_table_t* symbol_table) {
 
 
 char* symbol_table_dump_str(symbol_table_t* symbol_table) {
+    size_t buffer_size = sizeof(char) * (MAX_IDENTIFIER_LENGTH + BUF_SIZE) * symbol_table->size;
     char *dump = symbol_table_dump(symbol_table);
-    char *dump_str = (char*) malloc(sizeof(char) * (MAX_IDENTIFIER_LENGTH + BUF_SIZE) * symbol_table->size);
+    char *dump_str = (char*) malloc(buffer_size);
+    int written = 0;
     dump_str[0] = 0;
 
     for (int i = 0; i < symbol_table->size; ++i) {
-        char buf[BUF_SIZE] = "";
         char *ptr = dump + i * MAX_IDENTIFIER_LENGTH;
-        sprintf(buf, "%d", i);
-        strcat(dump_str, buf);
-        strcat(dump_str, "\t");
-        strcat(dump_str, ptr);
-        strcat(dump_str, "\n");
+        written += snprintf(dump_str + written, buffer_size - written, "%d\t%s\n", i, ptr);
     }
 
     free(dump);
