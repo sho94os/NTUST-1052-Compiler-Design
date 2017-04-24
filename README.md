@@ -40,3 +40,11 @@ To run C unit tests, `check` and `checkmk` are needed.
 ```bash
 $ make test
 ```
+
+
+Contributors
+------------
+
+This work contains contributed code that are not originally written by myself (@zetavg). The link to their PRs are listed below.
+
+- @Inndy - [#1](https://github.com/zetavg/NTUST-1052-Compiler-Design/pull/1)
