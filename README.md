@@ -3,11 +3,17 @@ NTUST Compiler Design Project
 
 [![Build Status](https://travis-ci.org/zetavg/NTUST-1052-Compiler-Design.svg?branch=master)](https://travis-ci.org/zetavg/NTUST-1052-Compiler-Design)
 
-This project is a lex scanner implementation of Go¯:
+This project is a lex/yacc parser implementation of Go¯:
 a simple Go programming language.
 
 Usage
 -----
+
+Example usage of the parser:
+
+```bash
+$ bin/parser < tests/fixtures/example.go
+```
 
 Example usage of the scanner:
 
