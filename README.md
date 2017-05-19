@@ -1,11 +1,17 @@
 NTUST Compiler Design Project
 =============================
 
-This project is a lex scanner implementation of Go¯:
+This project is a lex/yacc parser implementation of Go¯:
 a simple Go programming language.
 
 Usage
 -----
+
+Example usage of the parser:
+
+```bash
+$ bin/parser < tests/fixtures/example.go
+```
 
 Example usage of the scanner:
 

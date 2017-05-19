@@ -1,5 +1,7 @@
+/bin/parser
 /bin/scanner
 /src/lex.yy.c
+/src/y.*
 /tests/*-check.c
 /tests/*-check
 *.o

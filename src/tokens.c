@@ -3,185 +3,185 @@
 
 const char* get_token_name(token_t token) {
     switch (token) {
-        case T_ID:
+        case ID:
             return TNAME_ID;
             break;
-        case T_INTEGER_LITERAL:
+        case INTEGER_LITERAL:
             return TNAME_INTEGER_LITERAL;
             break;
-        case T_REAL_LITERAL:
+        case REAL_LITERAL:
             return TNAME_REAL_LITERAL;
             break;
-        case T_STRING_LITERAL:
+        case STRING_LITERAL:
             return TNAME_STRING_LITERAL;
             break;
-        case T_COMMA:
+        case COMMA:
             return TNAME_COMMA;
             break;
-        case T_COLON:
+        case COLON:
             return TNAME_COLON;
             break;
-        case T_SEMICOLON:
+        case SEMICOLON:
             return TNAME_SEMICOLON;
             break;
-        case T_LEFT_PARENTHESIS:
+        case LEFT_PARENTHESIS:
             return TNAME_LEFT_PARENTHESIS;
             break;
-        case T_RIGHT_PARENTHESIS:
+        case RIGHT_PARENTHESIS:
             return TNAME_RIGHT_PARENTHESIS;
             break;
-        case T_LEFT_SQUARE_BRACKET:
+        case LEFT_SQUARE_BRACKET:
             return TNAME_LEFT_SQUARE_BRACKET;
             break;
-        case T_RIGHT_SQUARE_BRACKET:
+        case RIGHT_SQUARE_BRACKET:
             return TNAME_RIGHT_SQUARE_BRACKET;
             break;
-        case T_LEFT_BRACKET:
+        case LEFT_BRACKET:
             return TNAME_LEFT_BRACKET;
             break;
-        case T_RIGHT_BRACKET:
+        case RIGHT_BRACKET:
             return TNAME_RIGHT_BRACKET;
             break;
-        case T_ADDITION:
-            return TNAME_ADDITION;
+        case OP_ADDITION:
+            return TNAME_OP_ADDITION;
             break;
-        case T_SUBTRACTION:
-            return TNAME_SUBTRACTION;
+        case OP_SUBTRACTION:
+            return TNAME_OP_SUBTRACTION;
             break;
-        case T_DIVISION:
-            return TNAME_DIVISION;
+        case OP_DIVISION:
+            return TNAME_OP_DIVISION;
             break;
-        case T_MULTIPLICATION:
-            return TNAME_MULTIPLICATION;
+        case OP_MULTIPLICATION:
+            return TNAME_OP_MULTIPLICATION;
             break;
-        case T_EXPONENTIATION:
-            return TNAME_EXPONENTIATION;
+        case OP_REMAINDER:
+            return TNAME_OP_REMAINDER;
             break;
-        case T_REMAINDER:
-            return TNAME_REMAINDER;
+        case OP_EXPONENTIATION:
+            return TNAME_OP_EXPONENTIATION;
             break;
-        case T_EQUAL_TO:
-            return TNAME_EQUAL_TO;
+        case OP_EQUAL_TO:
+            return TNAME_OP_EQUAL_TO;
             break;
-        case T_NOT_EQUAL_TO:
-            return TNAME_NOT_EQUAL_TO;
+        case OP_NOT_EQUAL_TO:
+            return TNAME_OP_NOT_EQUAL_TO;
             break;
-        case T_GREATER_THAN:
-            return TNAME_GREATER_THAN;
+        case OP_GREATER_THAN:
+            return TNAME_OP_GREATER_THAN;
             break;
-        case T_LESS_THAN:
-            return TNAME_LESS_THAN;
+        case OP_LESS_THAN:
+            return TNAME_OP_LESS_THAN;
             break;
-        case T_GREATER_THAN_OR_EQUAL_TO:
-            return TNAME_GREATER_THAN_OR_EQUAL_TO;
+        case OP_GREATER_THAN_OR_EQUAL_TO:
+            return TNAME_OP_GREATER_THAN_OR_EQUAL_TO;
             break;
-        case T_LESS_THAN_OR_EQUAL_TO:
-            return TNAME_LESS_THAN_OR_EQUAL_TO;
+        case OP_LESS_THAN_OR_EQUAL_TO:
+            return TNAME_OP_LESS_THAN_OR_EQUAL_TO;
             break;
-        case T_LOGICAL_AND:
-            return TNAME_LOGICAL_AND;
+        case OP_LOGICAL_AND:
+            return TNAME_OP_LOGICAL_AND;
             break;
-        case T_LOGICAL_OR:
-            return TNAME_LOGICAL_OR;
+        case OP_LOGICAL_OR:
+            return TNAME_OP_LOGICAL_OR;
             break;
-        case T_LOGICAL_NOT:
-            return TNAME_LOGICAL_NOT;
+        case OP_LOGICAL_NOT:
+            return TNAME_OP_LOGICAL_NOT;
             break;
-        case T_ASSIGNMENT:
-            return TNAME_ASSIGNMENT;
+        case OP_ASSIGNMENT:
+            return TNAME_OP_ASSIGNMENT;
             break;
-        case T_ADDITION_ASSIGNMENT:
-            return TNAME_ADDITION_ASSIGNMENT;
+        case OP_ADDITION_ASSIGNMENT:
+            return TNAME_OP_ADDITION_ASSIGNMENT;
             break;
-        case T_SUBTRACTION_ASSIGNMENT:
-            return TNAME_SUBTRACTION_ASSIGNMENT;
+        case OP_SUBTRACTION_ASSIGNMENT:
+            return TNAME_OP_SUBTRACTION_ASSIGNMENT;
             break;
-        case T_MULTIPLICATION_ASSIGNMENT:
-            return TNAME_MULTIPLICATION_ASSIGNMENT;
+        case OP_MULTIPLICATION_ASSIGNMENT:
+            return TNAME_OP_MULTIPLICATION_ASSIGNMENT;
             break;
-        case T_DIVISION_ASSIGNMENT:
-            return TNAME_DIVISION_ASSIGNMENT;
+        case OP_DIVISION_ASSIGNMENT:
+            return TNAME_OP_DIVISION_ASSIGNMENT;
             break;
-        case T_BOOL:
-            return TNAME_BOOL;
+        case KW_BOOL:
+            return TNAME_KW_BOOL;
             break;
-        case T_BREAK:
-            return TNAME_BREAK;
+        case KW_BREAK:
+            return TNAME_KW_BREAK;
             break;
-        case T_CASE:
-            return TNAME_CASE;
+        case KW_CASE:
+            return TNAME_KW_CASE;
             break;
-        case T_CONST:
-            return TNAME_CONST;
+        case KW_CONST:
+            return TNAME_KW_CONST;
             break;
-        case T_CONTINUE:
-            return TNAME_CONTINUE;
+        case KW_CONTINUE:
+            return TNAME_KW_CONTINUE;
             break;
-        case T_DEFAULT:
-            return TNAME_DEFAULT;
+        case KW_DEFAULT:
+            return TNAME_KW_DEFAULT;
             break;
-        case T_ELSE:
-            return TNAME_ELSE;
+        case KW_ELSE:
+            return TNAME_KW_ELSE;
             break;
-        case T_FALSE:
-            return TNAME_FALSE;
+        case KW_FALSE:
+            return TNAME_KW_FALSE;
             break;
-        case T_FOR:
-            return TNAME_FOR;
+        case KW_FOR:
+            return TNAME_KW_FOR;
             break;
-        case T_FUNC:
-            return TNAME_FUNC;
+        case KW_FUNC:
+            return TNAME_KW_FUNC;
             break;
-        case T_GO:
-            return TNAME_GO;
+        case KW_GO:
+            return TNAME_KW_GO;
             break;
-        case T_IF:
-            return TNAME_IF;
+        case KW_IF:
+            return TNAME_KW_IF;
             break;
-        case T_IMPORT:
-            return TNAME_IMPORT;
+        case KW_IMPORT:
+            return TNAME_KW_IMPORT;
             break;
-        case T_INT:
-            return TNAME_INT;
+        case KW_INT:
+            return TNAME_KW_INT;
             break;
-        case T_NIL:
-            return TNAME_NIL;
+        case KW_NIL:
+            return TNAME_KW_NIL;
             break;
-        case T_PRINT:
-            return TNAME_PRINT;
+        case KW_PRINT:
+            return TNAME_KW_PRINT;
             break;
-        case T_PRINTLN:
-            return TNAME_PRINTLN;
+        case KW_PRINTLN:
+            return TNAME_KW_PRINTLN;
             break;
-        case T_REAL:
-            return TNAME_REAL;
+        case KW_REAL:
+            return TNAME_KW_REAL;
             break;
-        case T_RETURN:
-            return TNAME_RETURN;
+        case KW_RETURN:
+            return TNAME_KW_RETURN;
             break;
-        case T_STRING:
-            return TNAME_STRING;
+        case KW_STRING:
+            return TNAME_KW_STRING;
             break;
-        case T_STRUCT:
-            return TNAME_STRUCT;
+        case KW_STRUCT:
+            return TNAME_KW_STRUCT;
             break;
-        case T_SWITCH:
-            return TNAME_SWITCH;
+        case KW_SWITCH:
+            return TNAME_KW_SWITCH;
             break;
-        case T_TRUE:
-            return TNAME_TRUE;
+        case KW_TRUE:
+            return TNAME_KW_TRUE;
             break;
-        case T_TYPE:
-            return TNAME_TYPE;
+        case KW_TYPE:
+            return TNAME_KW_TYPE;
             break;
-        case T_VAR:
-            return TNAME_VAR;
+        case KW_VAR:
+            return TNAME_KW_VAR;
             break;
-        case T_VOID:
-            return TNAME_VOID;
+        case KW_VOID:
+            return TNAME_KW_VOID;
             break;
-        case T_WHILE:
-            return TNAME_WHILE;
+        case KW_WHILE:
+            return TNAME_KW_WHILE;
             break;
         default:
             return NULL;

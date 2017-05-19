@@ -5,65 +5,52 @@
 #tcase Get the token name of a token
 
 #test test_get_token_name_id
-    ck_assert_str_eq(get_token_name(T_ID), "id");
+    ck_assert_str_eq(get_token_name(ID), "id");
 
 #test test_get_token_name_integer_literal
-    ck_assert_str_eq(get_token_name(T_INTEGER_LITERAL), "integer");
+    ck_assert_str_eq(get_token_name(INTEGER_LITERAL), "integer");
 
 #test test_get_token_name_real_literal
-    ck_assert_str_eq(get_token_name(T_REAL_LITERAL), "real");
+    ck_assert_str_eq(get_token_name(REAL_LITERAL), "real");
 
 #test test_get_token_name_string_literal
-    ck_assert_str_eq(get_token_name(T_STRING_LITERAL), "string");
+    ck_assert_str_eq(get_token_name(STRING_LITERAL), "string");
 
 #test test_get_token_name_comma
-    ck_assert_str_eq(get_token_name(T_COMMA), "','");
-    ck_assert_str_eq(get_token_name(','), "','");
+    ck_assert_str_eq(get_token_name(COMMA), "','");
 
 #test test_get_token_name_colon
-    ck_assert_str_eq(get_token_name(T_COLON), "':'");
-    ck_assert_str_eq(get_token_name(':'), "':'");
+    ck_assert_str_eq(get_token_name(COLON), "':'");
 
 #test test_get_token_name_semicolon
-    ck_assert_str_eq(get_token_name(T_SEMICOLON), "';'");
-    ck_assert_str_eq(get_token_name(';'), "';'");
+    ck_assert_str_eq(get_token_name(SEMICOLON), "';'");
 
 #test test_get_token_name_left_parenthesis
-    ck_assert_str_eq(get_token_name(T_LEFT_PARENTHESIS), "'('");
-    ck_assert_str_eq(get_token_name('('), "'('");
+    ck_assert_str_eq(get_token_name(LEFT_PARENTHESIS), "'('");
 
 #test test_get_token_name_right_parenthesis
-    ck_assert_str_eq(get_token_name(T_RIGHT_PARENTHESIS), "')'");
-    ck_assert_str_eq(get_token_name(')'), "')'");
+    ck_assert_str_eq(get_token_name(RIGHT_PARENTHESIS), "')'");
 
 #test test_get_token_name_left_square_bracket
-    ck_assert_str_eq(get_token_name(T_LEFT_SQUARE_BRACKET), "'['");
-    ck_assert_str_eq(get_token_name('['), "'['");
+    ck_assert_str_eq(get_token_name(LEFT_SQUARE_BRACKET), "'['");
 
 #test test_get_token_name_right_square_bracket
-    ck_assert_str_eq(get_token_name(T_RIGHT_SQUARE_BRACKET), "']'");
-    ck_assert_str_eq(get_token_name(']'), "']'");
+    ck_assert_str_eq(get_token_name(RIGHT_SQUARE_BRACKET), "']'");
 
 #test test_get_token_name_left_bracket
-    ck_assert_str_eq(get_token_name(T_LEFT_BRACKET), "'{'");
-    ck_assert_str_eq(get_token_name('{'), "'{'");
+    ck_assert_str_eq(get_token_name(LEFT_BRACKET), "'{'");
 
 #test test_get_token_name_right_bracket
-    ck_assert_str_eq(get_token_name(T_RIGHT_BRACKET), "'}'");
-    ck_assert_str_eq(get_token_name('}'), "'}'");
+    ck_assert_str_eq(get_token_name(RIGHT_BRACKET), "'}'");
 
 #test test_get_token_name_addition
-    ck_assert_str_eq(get_token_name(T_ADDITION), "'+'");
-    ck_assert_str_eq(get_token_name('+'), "'+'");
+    ck_assert_str_eq(get_token_name(OP_ADDITION), "'+'");
 
 #test test_get_token_name_subtraction
-    ck_assert_str_eq(get_token_name(T_SUBTRACTION), "'-'");
-    ck_assert_str_eq(get_token_name('-'), "'-'");
+    ck_assert_str_eq(get_token_name(OP_SUBTRACTION), "'-'");
 
 #test test_get_token_name_division
-    ck_assert_str_eq(get_token_name(T_DIVISION), "'/'");
-    ck_assert_str_eq(get_token_name('/'), "'/'");
+    ck_assert_str_eq(get_token_name(OP_DIVISION), "'/'");
 
 #test test_get_token_name_multiplication
-    ck_assert_str_eq(get_token_name(T_MULTIPLICATION), "'*'");
-    ck_assert_str_eq(get_token_name('*'), "'*'");
+    ck_assert_str_eq(get_token_name(OP_MULTIPLICATION), "'*'");
