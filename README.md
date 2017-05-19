@@ -36,6 +36,7 @@ Testing
 -------
 
 To run C unit tests, `check` and `checkmk` are needed.
+For execution result tests, you'll need `bats`.
 
 ```bash
 $ make test

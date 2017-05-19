@@ -1,0 +1,17 @@
+1: // print hello world
+<FUNC>
+<id:main>
+<'('>
+<')'>
+<'{'>
+2: func main( ) {
+<PRINTLN>
+<'('>
+<string:hello world>
+<')'>
+3:     println ("hello world")  // print the message
+<'}'>
+4: }
+
+Symbol Table:
+0	main
