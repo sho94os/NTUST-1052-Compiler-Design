@@ -1,4 +1,4 @@
-TESTS = tokens-check symbol_table-check
+TESTS = tokens-check symbol_table-check scanner-test
 
 .SECONDARY:
 .PHONY: clean test
@@ -24,6 +24,9 @@ src/%.o: src/%.c src/%.h
 
 %-check: tests/%-check
 	$<
+
+scanner-test: bin/scanner
+	tests/scanner-test.bats
 
 tests/%-check: src/%.o tests/%-check.o
 	gcc -lcheck $^ -o $@

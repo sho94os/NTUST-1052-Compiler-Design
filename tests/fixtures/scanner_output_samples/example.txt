@@ -1,0 +1,88 @@
+1: /*
+2:  * Example with Functions
+3:  */
+4: 
+5: // variables
+<VAR>
+<id:a>
+<INT>
+<'='>
+<integer:5>
+6: var a int = 5
+<VAR>
+<id:c>
+<INT>
+7: var c int
+8: 
+9: // function declaration
+<FUNC>
+<INT>
+<id:add>
+<'('>
+<id:a>
+<INT>
+<','>
+<id:b>
+<INT>
+<')'>
+<'{'>
+10: func int add(a int, b int) {
+<RETURN>
+<id:a>
+<'+'>
+<id:b>
+11:   return a+b
+<'}'>
+12: }
+13: 
+14: // main function
+<FUNC>
+<VOID>
+<id:main>
+<'('>
+<')'>
+<'{'>
+15: func void main( ) {
+<id:c>
+<'='>
+<id:add>
+<'('>
+<id:a>
+<','>
+<integer:10>
+<')'>
+16:   c = add(a, 10)
+<IF>
+<'('>
+<id:c>
+<'>'>
+<integer:10>
+<')'>
+<'{'>
+17:   if (c > 10) {
+<PRINT>
+<'-'>
+<id:c>
+18:     print -c
+<'}'>
+19:   }
+<ELSE>
+<'{'>
+20:   else {
+<PRINT>
+<id:c>
+21:     print c
+<'}'>
+22:   }
+<PRINTLN>
+<string:Hello World>
+23:   println "Hello World"
+<'}'>
+24: }
+
+Symbol Table:
+0	a
+1	c
+2	add
+3	b
+4	main

@@ -1,0 +1,83 @@
+1: /* fib.sc
+2:  *
+3:  * This test program computes the Nth Fibonacci number
+4:  */
+5: 
+6: // variables
+<CONST>
+<id:Fn>
+<'='>
+<integer:1>
+7: const Fn = 1
+<VAR>
+<id:n>
+<INT>
+<'='>
+<integer:8>
+8: var n int  = 8
+<VAR>
+<id:FNminus1>
+<INT>
+<'='>
+<integer:1>
+9: var FNminus1 int = 1
+<VAR>
+<id:temp>
+<INT>
+10: var temp int
+11: 
+12: // compute the nth Fibonacci number
+<FUNC>
+<VOID>
+<id:main>
+<'('>
+<')'>
+<'{'>
+13: func void main( ) {
+<FOR>
+<'('>
+<id:n>
+<'>'>
+<integer:2>
+<';'>
+<id:n>
+<'='>
+<id:n>
+<'-'>
+<integer:1>
+<')'>
+<'{'>
+14:   for (n > 2; n = n - 1) {
+<id:temp>
+<'='>
+<id:Fn>
+15:     temp = Fn
+<id:Fn>
+<'='>
+<id:Fn>
+<'+'>
+<id:FNminus1>
+16:     Fn = Fn + FNminus1
+<id:FNminus1>
+<'='>
+<id:temp>
+17:     FNminus1 = temp
+<'}'>
+18:   }
+19: 
+20:   /* print result */
+<PRINT>
+<string:Result of computation: >
+21:   print "Result of computation: "
+<PRINTLN>
+<id:n>
+22:   println n
+<'}'>
+23: }
+
+Symbol Table:
+0	Fn
+1	n
+2	FNminus1
+3	temp
+4	main
