@@ -1,0 +1,21 @@
+language: c
+sudo: required
+before_install:
+  - "sudo apt-get update -qq"
+  - "sudo apt-get install -qq check"
+  - "mkdir -p dependences"
+  - "cd dependences"
+  - "[ ! -d checkmk-1.0.0pre4 ] && wget http://micah.cowan.name/projects/checkmk/checkmk-1.0.0pre4.tar.gz && tar xvzf checkmk-1.0.0pre4.tar.gz"
+  - "cd checkmk-1.0.0pre4"
+  - "./configure"
+  - "sudo make install"
+  - "cd .."
+  - "[ ! -d bats ] && git clone https://github.com/sstephenson/bats.git"
+  - "cd bats"
+  - "sudo ./install.sh /usr/local"
+  - "cd .."
+  - "cd .."
+cache:
+  directories:
+    - dependences
+script: make test
