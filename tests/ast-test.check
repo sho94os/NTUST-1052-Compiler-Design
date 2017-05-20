@@ -109,6 +109,6 @@
     ast_node_set_value_string(thing_one_more, "one more thing");
     ast_node_insert_child(root_things, thing_one_more);
 
-    char *dump = ast_dump_graphviz(root_things);
+    char *dump = ast_dump_graphviz_with_options(root_things, false);
     char *expected_dump = "digraph ast {\n    thingsl1c1 [label=\"things\"]\n    thingl2c1 [label=\"thing\\n\\\"this is a thing\\\"\"]\n    thingl3c1 [label=\"thing\\n\\\"this is another thing\\\"\"]\n    thingl4c1 [label=\"thing\\n\\\"this is another thing with children\\\"\"]\n    thingl5c1 [label=\"thing\\n\\\"this is a thing thing\\\"\"]\n    thingl42c1 [label=\"thing\\n42\"]\n    thingl99c1 [label=\"thing\\n\\\"one more thing\\\"\"]\n\n    thingsl1c1->{ thingl2c1 thingl3c1 thingl4c1 thingl99c1 }\n    thingl4c1->{ thingl5c1 }\n    thingl5c1->{ thingl42c1 }\n}\n";
     ck_assert_str_eq(dump, expected_dump);

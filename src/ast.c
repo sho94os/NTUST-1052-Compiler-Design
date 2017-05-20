@@ -105,8 +105,11 @@ char* ast_dump_str(ast_node_t* ast) {
     return dump_str;
 }
 
-int list_graphviz_node(ast_node_t *ast_node, char *str, int written) {
-    written += snprintf(str + written, AST_DUMP_SIZE - written, "    %sl%dc%d [label=\"%s", get_ast_node_type_name(ast_node->type), ast_node->source_line_num, ast_node->source_column_num, get_ast_node_type_name(ast_node->type));
+int list_graphviz_node(ast_node_t *ast_node, char *str, int written, bool use_mem_key) {
+    if (!use_mem_key)
+        written += snprintf(str + written, AST_DUMP_SIZE - written, "    %sl%dc%d [label=\"%s", get_ast_node_type_name(ast_node->type), ast_node->source_line_num, ast_node->source_column_num, get_ast_node_type_name(ast_node->type));
+    else
+        written += snprintf(str + written, AST_DUMP_SIZE - written, "    %sl%dc%dm%d [label=\"%s", get_ast_node_type_name(ast_node->type), ast_node->source_line_num, ast_node->source_column_num, abs((int)ast_node), get_ast_node_type_name(ast_node->type));
 
     if (ast_node->has_value) {
         switch (ast_node->value_type) {
@@ -121,44 +124,54 @@ int list_graphviz_node(ast_node_t *ast_node, char *str, int written) {
 
     written += snprintf(str + written, AST_DUMP_SIZE - written, "\"]\n");
 
-    if (ast_node->child) written = list_graphviz_node(ast_node->child, str, written);
-    if (ast_node->sibling) written = list_graphviz_node(ast_node->sibling, str, written);
+    if (ast_node->child) written = list_graphviz_node(ast_node->child, str, written, use_mem_key);
+    if (ast_node->sibling) written = list_graphviz_node(ast_node->sibling, str, written, use_mem_key);
 
     return written;
 }
 
-int list_graphviz_node_children(ast_node_t *ast_node, char *str, int written) {
+int list_graphviz_node_children(ast_node_t *ast_node, char *str, int written, bool use_mem_key) {
     if (ast_node->child) {
-        written += snprintf(str + written, AST_DUMP_SIZE - written, "    %sl%dc%d->{ ", get_ast_node_type_name(ast_node->type), ast_node->source_line_num, ast_node->source_column_num);
+        if (!use_mem_key)
+            written += snprintf(str + written, AST_DUMP_SIZE - written, "    %sl%dc%d->{ ", get_ast_node_type_name(ast_node->type), ast_node->source_line_num, ast_node->source_column_num);
+        else
+            written += snprintf(str + written, AST_DUMP_SIZE - written, "    %sl%dc%dm%d->{ ", get_ast_node_type_name(ast_node->type), ast_node->source_line_num, ast_node->source_column_num, abs((int)ast_node));
 
         ast_node_t *current_child = ast_node->child;
 
         while (current_child) {
-            written += snprintf(str + written, AST_DUMP_SIZE - written, "%sl%dc%d ", get_ast_node_type_name(current_child->type), current_child->source_line_num, current_child->source_column_num);
+            if (!use_mem_key)
+                written += snprintf(str + written, AST_DUMP_SIZE - written, "%sl%dc%d ", get_ast_node_type_name(current_child->type), current_child->source_line_num, current_child->source_column_num);
+            else
+                written += snprintf(str + written, AST_DUMP_SIZE - written, "%sl%dc%dm%d ", get_ast_node_type_name(current_child->type), current_child->source_line_num, current_child->source_column_num, abs((int)current_child));
             current_child = current_child->sibling;
         }
 
         written += snprintf(str + written, AST_DUMP_SIZE - written, "}\n");
     }
 
-    if (ast_node->child) written = list_graphviz_node_children(ast_node->child, str, written);
-    if (ast_node->sibling) written = list_graphviz_node_children(ast_node->sibling, str, written);
+    if (ast_node->child) written = list_graphviz_node_children(ast_node->child, str, written, use_mem_key);
+    if (ast_node->sibling) written = list_graphviz_node_children(ast_node->sibling, str, written, use_mem_key);
 
     return written;
 }
 
-char* ast_dump_graphviz(ast_node_t* ast) {
+char* ast_dump_graphviz_with_options(ast_node_t* ast, bool use_mem_key) {
     char *dump = (char*) malloc(AST_DUMP_SIZE);
     dump[0] = 0;
     int written = 0;
 
     written += snprintf(dump + written, AST_DUMP_SIZE - written, "digraph ast {\n");
 
-    written = list_graphviz_node(ast, dump, written);
+    written = list_graphviz_node(ast, dump, written, use_mem_key);
     written += snprintf(dump + written, AST_DUMP_SIZE - written, "\n");
-    written = list_graphviz_node_children(ast, dump, written);
+    written = list_graphviz_node_children(ast, dump, written, use_mem_key);
 
     written += snprintf(dump + written, AST_DUMP_SIZE - written, "}\n");
 
     return dump;
+}
+
+char* ast_dump_graphviz(ast_node_t* ast) {
+    return ast_dump_graphviz_with_options(ast, true);
 }

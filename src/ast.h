@@ -40,5 +40,6 @@ void ast_node_insert_child(ast_node_t*, ast_node_t *child);
 
 char* ast_dump_str(ast_node_t*);
 char* ast_dump_graphviz(ast_node_t*);
+char* ast_dump_graphviz_with_options(ast_node_t*, bool use_mem_key);
 
 #endif
