@@ -1,0 +1,30 @@
+{
+  "type": "program",
+  "children": [
+    {
+      "type": "function_def",
+      "value": "main(id)",
+      "children": [
+        {
+          "type": "function_body",
+          "children": [
+            {
+              "type": "println_statement",
+              "children": [
+                {
+                  "type": "expression",
+                  "children": [
+                    {
+                      "type": "string_constant",
+                      "value": "hello world"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

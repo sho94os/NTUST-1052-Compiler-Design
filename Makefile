@@ -1,4 +1,4 @@
-TESTS = tokens-check symbol_table-check ast-check scanner-test
+TESTS = tokens-check symbol_table-check ast-check scanner-test parser-test
 
 .SECONDARY:
 .PHONY: clean test
@@ -38,6 +38,9 @@ src/%.o: src/%.c src/%.h
 
 %-check: tests/%-check
 	$<
+
+parser-test: bin/parser
+	tests/parser-test.bats
 
 scanner-test: bin/scanner
 	tests/scanner-test.bats

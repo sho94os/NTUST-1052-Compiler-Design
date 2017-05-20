@@ -1,10 +1,17 @@
 %{
 #include "lex.yy.c"
+#include "symbol_table.h"
 #include "ast.h"
 
 #ifdef STANDALONE_PARSER
 #else
 #endif
+
+ast_node_t* ann(ast_node_type_t type, YYLTYPE loc) { return new_ast_node(type, loc.first_line, loc.first_column); }
+void vsym(ast_node_t *node, symbol_table_entry_t *v) { ast_node_set_value_symbol(node, v); }
+void vint(ast_node_t *node, int v) { ast_node_set_value_integer(node, v); }
+void vstr(ast_node_t *node, char *v) { ast_node_set_value_string(node, v); }
+void ich(ast_node_t *node, ast_node_t *child) { ast_node_insert_child(node, child); }
 
 ast_node_t* ast_root;
 %}
@@ -14,14 +21,15 @@ ast_node_t* ast_root;
 %start program
 
 %union {
-    int   integer;
-    char* string;
-    ast_node_t* ast_node;
+    symbol_table_entry_t* symbol;
+    int                   integer;
+    char*                 string;
+    ast_node_t*           ast_node;
 }
 
 /** Identifier **/
 
-%token ID
+%token <symbol> ID
 
 /** Literals **/
 
@@ -100,84 +108,56 @@ ast_node_t* ast_root;
 
 /** Nonterminals **/
 
-%type<ast_node> program
-%type<ast_node> things
-%type<ast_node> thing
+%type <ast_node> program
+%type <symbol> identifier
+%type <ast_node> function_def
+%type <ast_node> function_body
+%type <ast_node> statement
+%type <ast_node> println_statement
+%type <ast_node> expression
+%type <ast_node> string_constant
 
 %%
 
-program : things { $$ = new_ast_node(program, @$.first_line, @$.first_column); ast_node_insert_child($$, $1); ast_root = $$; }
+/** Program **/
+
+program : program function_def { $$ = $1; ich($$, $2); }
+        | { $$ = ann(program, @$); ast_root = $$; }
         ;
 
-things : thing { $$ = new_ast_node(things, @$.first_line, @$.first_column); ast_node_insert_child($$, $1); }
-       | thing things { $$ = new_ast_node(things, @$.first_line, @$.first_column); ast_node_insert_child($$, $1); ast_node_insert_child($$, $2); }
-       ;
+/** Identifier **/
 
-thing : ID { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(ID)); }
-      | INTEGER_LITERAL { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(INTEGER_LITERAL)); }
-      | REAL_LITERAL { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(REAL_LITERAL)); }
-      | STRING_LITERAL { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(STRING_LITERAL)); }
-      | COMMA { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(COMMA)); }
-      | COLON { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(COLON)); }
-      | SEMICOLON { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(SEMICOLON)); }
-      | LEFT_PARENTHESIS { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(LEFT_PARENTHESIS)); }
-      | RIGHT_PARENTHESIS { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(RIGHT_PARENTHESIS)); }
-      | LEFT_SQUARE_BRACKET { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(LEFT_SQUARE_BRACKET)); }
-      | RIGHT_SQUARE_BRACKET { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(RIGHT_SQUARE_BRACKET)); }
-      | LEFT_BRACKET { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(LEFT_BRACKET)); }
-      | RIGHT_BRACKET { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(RIGHT_BRACKET)); }
-      | OP_ADDITION { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_ADDITION)); }
-      | OP_SUBTRACTION { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_SUBTRACTION)); }
-      | OP_DIVISION { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_DIVISION)); }
-      | OP_MULTIPLICATION { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_MULTIPLICATION)); }
-      | OP_REMAINDER { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_REMAINDER)); }
-      | OP_EXPONENTIATION { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_EXPONENTIATION)); }
-      | OP_EQUAL_TO { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_EQUAL_TO)); }
-      | OP_NOT_EQUAL_TO { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_NOT_EQUAL_TO)); }
-      | OP_GREATER_THAN { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_GREATER_THAN)); }
-      | OP_LESS_THAN { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_LESS_THAN)); }
-      | OP_GREATER_THAN_OR_EQUAL_TO { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_GREATER_THAN_OR_EQUAL_TO)); }
-      | OP_LESS_THAN_OR_EQUAL_TO { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_LESS_THAN_OR_EQUAL_TO)); }
-      | OP_LOGICAL_AND { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_LOGICAL_AND)); }
-      | OP_LOGICAL_OR { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_LOGICAL_OR)); }
-      | OP_LOGICAL_NOT { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_LOGICAL_NOT)); }
-      | OP_ASSIGNMENT { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_ASSIGNMENT)); }
-      | OP_ADDITION_ASSIGNMENT { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_ADDITION_ASSIGNMENT)); }
-      | OP_SUBTRACTION_ASSIGNMENT { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_SUBTRACTION_ASSIGNMENT)); }
-      | OP_MULTIPLICATION_ASSIGNMENT { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_MULTIPLICATION_ASSIGNMENT)); }
-      | OP_DIVISION_ASSIGNMENT { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(OP_DIVISION_ASSIGNMENT)); }
-      | KW_BOOL { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_BOOL)); }
-      | KW_BREAK { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_BREAK)); }
-      | KW_CASE { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_CASE)); }
-      | KW_CONST { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_CONST)); }
-      | KW_CONTINUE { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_CONTINUE)); }
-      | KW_DEFAULT { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_DEFAULT)); }
-      | KW_ELSE { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_ELSE)); }
-      | KW_FALSE { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_FALSE)); }
-      | KW_FOR { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_FOR)); }
-      | KW_FUNC { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_FUNC)); }
-      | KW_GO { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_GO)); }
-      | KW_IF { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_IF)); }
-      | KW_IMPORT { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_IMPORT)); }
-      | KW_INT { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_INT)); }
-      | KW_NIL { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_NIL)); }
-      | KW_PRINT { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_PRINT)); }
-      | KW_PRINTLN { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_PRINTLN)); }
-      | KW_REAL { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_REAL)); }
-      | KW_RETURN { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_RETURN)); }
-      | KW_STRING { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_STRING)); }
-      | KW_STRUCT { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_STRUCT)); }
-      | KW_SWITCH { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_SWITCH)); }
-      | KW_TRUE { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_TRUE)); }
-      | KW_TYPE { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_TYPE)); }
-      | KW_VAR { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_VAR)); }
-      | KW_VOID { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_VOID)); }
-      | KW_WHILE { $$ = new_ast_node(thing, @$.first_line, @$.first_column); ast_node_set_value_string($$, get_token_name(KW_WHILE)); }
-      ;
+identifier : ID { $$ = $1; } ;
+
+/** Functions **/
+
+function_def : KW_FUNC identifier LEFT_PARENTHESIS RIGHT_PARENTHESIS LEFT_BRACKET function_body RIGHT_BRACKET { $$ = ann(function_def, @$); vsym($$, $2); ich($$, $6); } ;
+
+function_body : function_body statement { $$ = $1; ich($$, $2); }
+              | { $$ = ann(function_body, @$); }
+              ;
+
+/** Statements **/
+
+statement : println_statement
+          ;
+
+println_statement : KW_PRINTLN expression { $$ = ann(println_statement, @$); ich($$, $2); }
+                  | KW_PRINTLN LEFT_PARENTHESIS expression RIGHT_PARENTHESIS { $$ = ann(println_statement, @$); ich($$, $3); }
+                  ;
+
+/** Expressions **/
+
+expression : string_constant { $$ = ann(expression, @$); ich($$, $1); }
+           ;
+
+/** Constants **/
+
+string_constant : STRING_LITERAL { $$ = ann(string_constant, @$); vstr($$, yylval.string); } ;
 
 %%
 
 int yyerror(char *msg) {
-    fprintf(stderr, "%s\n", msg);
+    fprintf(stderr, "%s around line %d, cloumn %d\n", msg, yylloc.first_line, yylloc.first_column);
     return 0;
 }
