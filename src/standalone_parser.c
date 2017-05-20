@@ -6,11 +6,21 @@ int main(int argc, char **argv) {
     init_symbol_table();
     yyparse();
 
-    printf("\nAST:\n");
-    printf("%s\n", ast_dump_str(ast_root));
+    int format = 0;
 
-    printf("\nAST Graphviz Diagram:\n");
-    printf("%s\n", ast_dump_graphviz(ast_root));
+    for (int i = 0; i < argc; ++i) {
+        char *arg = argv[i];
+        if (strcmp(arg, "--graphviz") == 0) format = 1;
+    }
+
+    switch (format) {
+        case 0:
+            printf("%s", ast_dump_str(ast_root));
+            break;
+        case 1:
+            printf("%s", ast_dump_graphviz(ast_root));
+            break;
+    }
 
     exit(0);
 }

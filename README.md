@@ -15,6 +15,12 @@ Example usage of the parser:
 $ bin/parser < tests/fixtures/example.go
 ```
 
+To get an Graphviz diagram of the AST, use the `--graphviz` option:
+
+```bash
+$ bin/parser --graphviz < tests/fixtures/example.go
+```
+
 Example usage of the scanner:
 
 ```bash
