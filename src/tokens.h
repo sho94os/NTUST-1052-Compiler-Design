@@ -1,6 +1,8 @@
 #ifndef TOKENS_H
 #define TOKENS_H
 
+#include "ast.h"
+
 typedef int token_t;
 
 /** Token Definitions - defined by parser.y **/
