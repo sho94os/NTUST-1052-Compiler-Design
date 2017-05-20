@@ -1,0 +1,114 @@
+#include "../src/ast.h"
+
+#suite AST
+
+#tcase Creation of an AST node
+
+#test test_new_ast_node
+    ast_node_t *ast_node = new_ast_node(thing, 1, 1);
+    ck_assert_int_eq(ast_node->type, thing);
+    ck_assert(!ast_node->has_value);
+    ck_assert_int_eq(ast_node->source_line_num, 1);
+    ck_assert_int_eq(ast_node->source_column_num, 1);
+    ck_assert(!ast_node->child);
+    ck_assert(!ast_node->sibling);
+
+#tcase Set value of an AST node
+
+#test test_ast_node_set_value_integer
+    ast_node_t *ast_node = new_ast_node(thing, 1, 1);
+    ast_node_set_value_integer(ast_node, 100);
+    ck_assert(ast_node->has_value);
+    ck_assert_int_eq(ast_node->value_type, integer);
+    ck_assert_int_eq(ast_node->value.integer, 100);
+
+#test test_ast_node_set_value_string
+    ast_node_t *ast_node = new_ast_node(thing, 1, 1);
+    ast_node_set_value_string(ast_node, "hello");
+    ck_assert(ast_node->has_value);
+    ck_assert_int_eq(ast_node->value_type, string);
+    ck_assert_str_eq(ast_node->value.string, "hello");
+
+#tcase Insert child for an AST node
+
+#test test_ast_node_insert_child
+    ast_node_t *n1 = new_ast_node(thing, 1, 1);
+    ast_node_t *n2 = new_ast_node(thing, 2, 1);
+    ast_node_t *n3 = new_ast_node(thing, 3, 1);
+    ast_node_t *n4 = new_ast_node(thing, 4, 1);
+    ast_node_insert_child(n1, n2);
+    ast_node_insert_child(n1, n3);
+    ast_node_insert_child(n1, n4);
+    ck_assert_int_eq((int)n1->child, (int)n2);
+    ck_assert_int_eq((int)n2->sibling, (int)n3);
+    ck_assert_int_eq((int)n3->sibling, (int)n4);
+
+#tcase Dumping an AST
+
+#test test_ast_dump_str
+    ast_node_t *root_things = new_ast_node(things, 1, 1);
+
+    ast_node_t *thing_1 = new_ast_node(thing, 2, 1);
+    ast_node_set_value_string(thing_1, "this is a thing");
+    ast_node_insert_child(root_things, thing_1);
+
+    ast_node_t *thing_2 = new_ast_node(thing, 3, 1);
+    ast_node_set_value_string(thing_2, "this is another thing");
+    ast_node_insert_child(root_things, thing_2);
+
+    ast_node_t *thing_3 = new_ast_node(thing, 4, 1);
+    ast_node_set_value_string(thing_3, "this is another thing with children");
+    ast_node_insert_child(root_things, thing_3);
+
+    ast_node_t *thing_3_1 = new_ast_node(thing, 5, 1);
+    ast_node_set_value_string(thing_3_1, "this is a thing thing");
+    ast_node_insert_child(thing_3, thing_3_1);
+
+    ast_node_t *thing_42 = new_ast_node(thing, 42, 1);
+    ast_node_set_value_integer(thing_42, 42);
+    ast_node_insert_child(thing_3_1, thing_42);
+
+    ast_node_t *thing_one_more = new_ast_node(thing, 99, 1);
+    ast_node_set_value_string(thing_one_more, "one more thing");
+    ast_node_insert_child(root_things, thing_one_more);
+
+    char *dump = ast_dump_str(root_things);
+    char *expected_dump = "things {\n    children: [\n        thing {\n            value: \"this is a thing\"\n        }\n        thing {\n            value: \"this is another thing\"\n        }\n        thing {\n            value: \"this is another thing with children\"\n            children: [\n                thing {\n                    value: \"this is a thing thing\"\n                    children: [\n                        thing {\n                            value: 42\n                        }\n                    ]\n                }\n            ]\n        }\n        thing {\n            value: \"one more thing\"\n        }\n    ]\n}\n";
+    ck_assert_str_eq(dump, expected_dump);
+
+#test test_ast_dump_str_2
+    ast_node_t *root_things = new_ast_node(things, 1, 1);
+    char *dump = ast_dump_str(root_things);
+    char *expected_dump = "things {\n}\n";
+    ck_assert_str_eq(dump, expected_dump);
+
+#test test_ast_dump_graphviz
+    ast_node_t *root_things = new_ast_node(things, 1, 1);
+
+    ast_node_t *thing_1 = new_ast_node(thing, 2, 1);
+    ast_node_set_value_string(thing_1, "this is a thing");
+    ast_node_insert_child(root_things, thing_1);
+
+    ast_node_t *thing_2 = new_ast_node(thing, 3, 1);
+    ast_node_set_value_string(thing_2, "this is another thing");
+    ast_node_insert_child(root_things, thing_2);
+
+    ast_node_t *thing_3 = new_ast_node(thing, 4, 1);
+    ast_node_set_value_string(thing_3, "this is another thing with children");
+    ast_node_insert_child(root_things, thing_3);
+
+    ast_node_t *thing_3_1 = new_ast_node(thing, 5, 1);
+    ast_node_set_value_string(thing_3_1, "this is a thing thing");
+    ast_node_insert_child(thing_3, thing_3_1);
+
+    ast_node_t *thing_42 = new_ast_node(thing, 42, 1);
+    ast_node_set_value_integer(thing_42, 42);
+    ast_node_insert_child(thing_3_1, thing_42);
+
+    ast_node_t *thing_one_more = new_ast_node(thing, 99, 1);
+    ast_node_set_value_string(thing_one_more, "one more thing");
+    ast_node_insert_child(root_things, thing_one_more);
+
+    char *dump = ast_dump_graphviz(root_things);
+    char *expected_dump = "digraph ast {\n    thingsl1c1 [label=\"things\"]\n    thingl2c1 [label=\"thing\\n\\\"this is a thing\\\"\"]\n    thingl3c1 [label=\"thing\\n\\\"this is another thing\\\"\"]\n    thingl4c1 [label=\"thing\\n\\\"this is another thing with children\\\"\"]\n    thingl5c1 [label=\"thing\\n\\\"this is a thing thing\\\"\"]\n    thingl42c1 [label=\"thing\\n42\"]\n    thingl99c1 [label=\"thing\\n\\\"one more thing\\\"\"]\n\n    thingsl1c1->{ thingl2c1 thingl3c1 thingl4c1 thingl99c1 }\n    thingl4c1->{ thingl5c1 }\n    thingl5c1->{ thingl42c1 }\n}\n";
+    ck_assert_str_eq(dump, expected_dump);
