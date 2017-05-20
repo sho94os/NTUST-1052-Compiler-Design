@@ -39,9 +39,9 @@ symbol_table_t* symbol_table_create() {
     return symbol_table;
 }
 
-int symbol_table_insert(symbol_table_t* symbol_table, char* identifier) {
-    int lookup_index = symbol_table_lookup(symbol_table, identifier);
-    if (lookup_index >= 0) return lookup_index;
+symbol_table_entry_t* symbol_table_insert(symbol_table_t* symbol_table, char* identifier) {
+    symbol_table_entry_t* lookup_entry = symbol_table_lookup(symbol_table, identifier);
+    if (lookup_entry) return lookup_entry;
 
     symbol_table_entry_t *entry = malloc(sizeof(symbol_table_entry_t));
     entry->next = NULL;
@@ -59,16 +59,16 @@ int symbol_table_insert(symbol_table_t* symbol_table, char* identifier) {
 
     symbol_table->size += 1;
 
-    return entry->index;
+    return entry;
 }
 
-int symbol_table_lookup(symbol_table_t* symbol_table, char* identifier) {
+symbol_table_entry_t* symbol_table_lookup(symbol_table_t* symbol_table, char* identifier) {
     int hash_value = hash(identifier);
-    if (!symbol_table->entries[hash_value]) return -1;
+    if (!symbol_table->entries[hash_value]) return NULL;
     symbol_table_entry_t *entry = symbol_table->entries[hash_value];
     entry = find_through_entries_by_identifier(entry, identifier);
-    if (!entry) return -1;
-    return entry->index;
+    if (!entry) return NULL;
+    return entry;
 }
 
 void insert_to_dump(symbol_table_entry_t *entry, char *dump) {

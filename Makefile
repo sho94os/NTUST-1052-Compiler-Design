@@ -43,10 +43,10 @@ scanner-test: bin/scanner
 	tests/scanner-test.bats
 
 tests/%-check: src/%.o tests/%-check.o
-	gcc $(CFLAGS) $^ -o $@ `pkg-config --cflags --libs check`
+	gcc $(CFLAGS) -w $^ -o $@ `pkg-config --cflags --libs check`
 
-tests/%-check.o: %-check.c
-	gcc $(CFLAGS) -c $< -o $@
+tests/%-check.o: tests/%-check.c
+	gcc $(CFLAGS) -w -c $< -o $@
 
 tests/%-check.c: tests/%-test.check
 	checkmk $< > $@

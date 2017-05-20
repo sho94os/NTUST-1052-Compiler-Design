@@ -16,8 +16,8 @@ typedef struct symbol_table_s {
 } symbol_table_t;
 
 symbol_table_t* symbol_table_create();
-int symbol_table_insert(symbol_table_t*, char* identifier);
-int symbol_table_lookup(symbol_table_t*, char* identifier);
+symbol_table_entry_t* symbol_table_insert(symbol_table_t*, char* identifier);
+symbol_table_entry_t* symbol_table_lookup(symbol_table_t*, char* identifier);
 char* symbol_table_dump(symbol_table_t*);
 char* symbol_table_dump_str(symbol_table_t*);
 
