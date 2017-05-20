@@ -73,13 +73,13 @@
     ast_node_insert_child(root_things, thing_one_more);
 
     char *dump = ast_dump_str(root_things);
-    char *expected_dump = "things {\n    children: [\n        thing {\n            value: \"this is a thing\"\n        }\n        thing {\n            value: \"this is another thing\"\n        }\n        thing {\n            value: \"this is another thing with children\"\n            children: [\n                thing {\n                    value: \"this is a thing thing\"\n                    children: [\n                        thing {\n                            value: 42\n                        }\n                    ]\n                }\n            ]\n        }\n        thing {\n            value: \"one more thing\"\n        }\n    ]\n}\n";
+    char *expected_dump = "{\n    \"type\": \"things\",\n    \"children\": [\n        {\n            \"type\": \"thing\",\n            \"value\": \"this is a thing\"\n        },\n        {\n            \"type\": \"thing\",\n            \"value\": \"this is another thing\"\n        },\n        {\n            \"type\": \"thing\",\n            \"value\": \"this is another thing with children\",\n            \"children\": [\n                {\n                    \"type\": \"thing\",\n                    \"value\": \"this is a thing thing\",\n                    \"children\": [\n                        {\n                            \"type\": \"thing\",\n                            \"value\": 42\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"type\": \"thing\",\n            \"value\": \"one more thing\"\n        }\n    ]\n}\n";
     ck_assert_str_eq(dump, expected_dump);
 
 #test test_ast_dump_str_2
     ast_node_t *root_things = new_ast_node(things, 1, 1);
     char *dump = ast_dump_str(root_things);
-    char *expected_dump = "things {\n}\n";
+    char *expected_dump = "{\n    \"type\": \"things\"\n}\n";
     ck_assert_str_eq(dump, expected_dump);
 
 #test test_ast_dump_graphviz

@@ -59,38 +59,41 @@ const char* get_ast_node_type_name(ast_node_type_t type) {
 
 int dump_ast_node_to_str(ast_node_t *ast_node, char *str, int written, int level) {
     if (level == 0) {
-        written += snprintf(str + written, AST_DUMP_SIZE - written, "%s {\n", get_ast_node_type_name(ast_node->type));
+        written += snprintf(str + written, AST_DUMP_SIZE - written, "{\n");
     } else {
-        written += snprintf(str + written, AST_DUMP_SIZE - written, "%*c%s {\n", level * 8, ' ', get_ast_node_type_name(ast_node->type));
+        written += snprintf(str + written, AST_DUMP_SIZE - written, "%*c{\n", level * 8, ' ');
     }
+
+    written += snprintf(str + written, AST_DUMP_SIZE - written, "%*c\"type\": \"%s\"", level * 8 + 4, ' ', get_ast_node_type_name(ast_node->type));
 
     if (ast_node->has_value) {
         switch (ast_node->value_type) {
             case integer:
-                written += snprintf(str + written, AST_DUMP_SIZE - written, "%*cvalue: %d\n", level * 8 + 4, ' ', ast_node->value.integer);
+                written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": %d", level * 8 + 4, ' ', ast_node->value.integer);
                 break;
             case string:
-                written += snprintf(str + written, AST_DUMP_SIZE - written, "%*cvalue: \"%s\"\n", level * 8 + 4, ' ', ast_node->value.string);
+                written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": \"%s\"", level * 8 + 4, ' ', ast_node->value.string);
                 break;
         }
     }
 
     if (ast_node->child) {
-        written += snprintf(str + written, AST_DUMP_SIZE - written, "%*cchildren: [\n", level * 8 + 4, ' ');
+        written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"children\": [\n", level * 8 + 4, ' ');
         ast_node_t *current_child = ast_node->child;
 
         while (current_child) {
+            if (current_child != ast_node->child) written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n");
             written = dump_ast_node_to_str(current_child, str, written, level + 1);
             current_child = current_child->sibling;
         }
 
-        written += snprintf(str + written, AST_DUMP_SIZE - written, "%*c]\n", level * 8 + 4, ' ');
+        written += snprintf(str + written, AST_DUMP_SIZE - written, "\n%*c]", level * 8 + 4, ' ');
     }
 
     if (level == 0) {
-        written += snprintf(str + written, AST_DUMP_SIZE - written, "}\n");
+        written += snprintf(str + written, AST_DUMP_SIZE - written, "\n}\n");
     } else {
-        written += snprintf(str + written, AST_DUMP_SIZE - written, "%*c}\n", level * 8, ' ');
+        written += snprintf(str + written, AST_DUMP_SIZE - written, "\n%*c}", level * 8, ' ');
     }
 
     return written;
