@@ -137,9 +137,8 @@ newline  \r?\n
 }
 
 <STRING>\" {
-    tokenString(STRING_LITERAL, strbuf);
-    strbuf[0] = '\0';
     BEGIN INITIAL;
+    tokenString(STRING_LITERAL, strbuf);
 }
 
 <STRING>\"\" {
