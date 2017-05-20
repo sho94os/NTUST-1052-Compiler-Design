@@ -22,5 +22,9 @@ int main(int argc, char **argv) {
             break;
     }
 
-    exit(0);
+    if (has_error) {
+        exit(1);
+    } else {
+        exit(0);
+    }
 }

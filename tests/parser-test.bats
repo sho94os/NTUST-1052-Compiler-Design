@@ -10,3 +10,8 @@ setup() {
   expected_result="$(cat tests/samples/parser_output_samples/hello_world.txt)"
   [ "$result" = "$expected_result" ]
 }
+
+@test "test scanner return status with syntax error" {
+  run bin/parser < tests/samples/syntax_error.go
+  [ "$status" -eq 1 ]
+}

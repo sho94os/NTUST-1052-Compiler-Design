@@ -14,6 +14,7 @@ void vstr(ast_node_t *node, char *v) { ast_node_set_value_string(node, v); }
 void ich(ast_node_t *node, ast_node_t *child) { ast_node_insert_child(node, child); }
 
 ast_node_t* ast_root;
+bool has_error = false;
 %}
 
 %locations
@@ -159,5 +160,6 @@ string_constant : STRING_LITERAL { $$ = ann(string_constant, @$); vstr($$, yylva
 
 int yyerror(char *msg) {
     fprintf(stderr, "%s around line %d, cloumn %d\n", msg, yylloc.first_line, yylloc.first_column);
+    has_error = true;
     return 0;
 }
