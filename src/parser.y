@@ -7,19 +7,25 @@
 #else
 #endif
 
-ast_node_t* ann(ast_node_type_t type, YYLTYPE loc) { return new_ast_node(type, loc.first_line, loc.first_column); }
-void vsym(ast_node_t *node, symbol_table_entry_t *v) { ast_node_set_value_symbol(node, v); }
-void vint(ast_node_t *node, int v) { ast_node_set_value_integer(node, v); }
-void vstr(ast_node_t *node, char *v) { ast_node_set_value_string(node, v); }
-void ich(ast_node_t *node, ast_node_t *child) { ast_node_insert_child(node, child); }
+ast_node_t* n(ast_node_type_t t, YYLTYPE l) { return new_ast_node(t, l.first_line, l.first_column); }
+void vsym(ast_node_t *n, symbol_table_entry_t *v) { ast_node_set_value_symbol(n, v); }
+void vint(ast_node_t *n, int v) { ast_node_set_value_integer(n, v); }
+void vstr(ast_node_t *n, char *v) { ast_node_set_value_string(n, v); }
+void ich(ast_node_t *n, ast_node_t *child) { ast_node_insert_child(n, child); }
 
 ast_node_t* ast_root;
 bool has_error = false;
 %}
 
+/** Extensions **/
+
 %locations
 
+/** Start Rule **/
+
 %start program
+
+/** Type Definition **/
 
 %union {
     symbol_table_entry_t* symbol;
@@ -110,7 +116,7 @@ bool has_error = false;
 /** Nonterminals **/
 
 %type <ast_node> program
-%type <symbol> identifier
+%type <symbol>   identifier
 %type <ast_node> function_def
 %type <ast_node> function_body
 %type <ast_node> statement
@@ -123,7 +129,7 @@ bool has_error = false;
 /** Program **/
 
 program : program function_def { $$ = $1; ich($$, $2); }
-        | { $$ = ann(program, @$); ast_root = $$; }
+        | { $$ = n(program, @$); ast_root = $$; }
         ;
 
 /** Identifier **/
@@ -132,10 +138,14 @@ identifier : ID { $$ = $1; } ;
 
 /** Functions **/
 
-function_def : KW_FUNC identifier LEFT_PARENTHESIS RIGHT_PARENTHESIS LEFT_BRACKET function_body RIGHT_BRACKET { $$ = ann(function_def, @$); vsym($$, $2); ich($$, $6); } ;
+function_def :
+    KW_FUNC identifier LEFT_PARENTHESIS RIGHT_PARENTHESIS LEFT_BRACKET function_body RIGHT_BRACKET {
+        $$ = n(function_def, @$); vsym($$, $2); ich($$, $6);
+    }
+;
 
 function_body : function_body statement { $$ = $1; ich($$, $2); }
-              | { $$ = ann(function_body, @$); }
+              | { $$ = n(function_body, @$); }
               ;
 
 /** Statements **/
@@ -143,18 +153,24 @@ function_body : function_body statement { $$ = $1; ich($$, $2); }
 statement : println_statement
           ;
 
-println_statement : KW_PRINTLN expression { $$ = ann(println_statement, @$); ich($$, $2); }
-                  | KW_PRINTLN LEFT_PARENTHESIS expression RIGHT_PARENTHESIS { $$ = ann(println_statement, @$); ich($$, $3); }
-                  ;
+println_statement :
+    KW_PRINTLN expression {
+        $$ = n(println_statement, @$); ich($$, $2);
+    }
+|
+    KW_PRINTLN LEFT_PARENTHESIS expression RIGHT_PARENTHESIS {
+        $$ = n(println_statement, @$); ich($$, $3);
+    }
+;
 
 /** Expressions **/
 
-expression : string_constant { $$ = ann(expression, @$); ich($$, $1); }
+expression : string_constant { $$ = n(expression, @$); ich($$, $1); }
            ;
 
 /** Constants **/
 
-string_constant : STRING_LITERAL { $$ = ann(string_constant, @$); vstr($$, yylval.string); } ;
+string_constant : STRING_LITERAL { $$ = n(string_constant, @$); vstr($$, yylval.string); } ;
 
 %%
 

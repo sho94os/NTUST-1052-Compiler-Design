@@ -2,20 +2,21 @@
 #include "tokens.h"
 #include "symbol_table.h"
 
+#define LIST { column_num += strlen(yytext); strcat(buf, yytext); }
+
 #ifdef STANDALONE_SCANNER
-    #define LIST { column_num += strlen(yytext); strcat(buf, yytext); }
     #define LINE { printf("%d: %s", line_num++, buf); column_num = 1; buf[0] = '\0'; }
-    #define token(t)           { LIST; printf("<%s>\n", get_token_name(t)); }
+    #define token(t)           { LIST; printf("<%s>\n",    get_token_name(t)); }
     #define tokenSymbol(t, s)  { LIST; printf("<%s:%s>\n", get_token_name(t), s->identifier); }
     #define tokenInteger(t, i) { LIST; printf("<%s:%d>\n", get_token_name(t), i); }
     #define tokenString(t, s)  { LIST; printf("<%s:%s>\n", get_token_name(t), s); }
 #else
-    #define LIST { column_num += strlen(yytext); strcat(buf, yytext); }
     #define LINE { line_num++; column_num = 1; buf[0] = '\0'; }
-    #define token(t)           { LIST; yylloc.first_line = line_num; yylloc.first_column = column_num; return t; }
-    #define tokenSymbol(t, s)  { LIST; yylloc.first_line = line_num; yylloc.first_column = column_num; yylval.symbol = s; return t; }
-    #define tokenInteger(t, i) { LIST; yylloc.first_line = line_num; yylloc.first_column = column_num; yylval.integer = i; return t; }
-    #define tokenString(t, s)  { LIST; yylloc.first_line = line_num; yylloc.first_column = column_num; yylval.string = s; return t; }
+    #define set_yylloc() { yylloc.first_line = line_num; yylloc.first_column = column_num; }
+    #define token(t)           { LIST; set_yylloc(); return t; }
+    #define tokenSymbol(t, s)  { LIST; set_yylloc(); yylval.symbol = s; return t; }
+    #define tokenInteger(t, i) { LIST; set_yylloc(); yylval.integer = i; return t; }
+    #define tokenString(t, s)  { LIST; set_yylloc(); yylval.string = s; return t; }
 #endif
 
 #define MAX_LINE_LENGTH 256

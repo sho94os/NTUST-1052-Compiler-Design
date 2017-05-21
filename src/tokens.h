@@ -1,3 +1,8 @@
+/*
+ * tokens.h
+ * Declarations for the tokens.
+ */
+
 #ifndef TOKENS_H
 #define TOKENS_H
 
@@ -7,70 +12,74 @@
 typedef int token_t;
 
 /** Token Definitions - defined by parser.y **/
+
 #include "y.tab.h"
 
 /** Token Names **/
 
-#define TNAME_ID                          "id"
-#define TNAME_INTEGER_LITERAL             "integer"
-#define TNAME_REAL_LITERAL                "real"
-#define TNAME_STRING_LITERAL              "string"
-#define TNAME_COMMA                       "','"
-#define TNAME_COLON                       "':'"
-#define TNAME_SEMICOLON                   "';'"
-#define TNAME_LEFT_PARENTHESIS            "'('"
-#define TNAME_RIGHT_PARENTHESIS           "')'"
-#define TNAME_LEFT_SQUARE_BRACKET         "'['"
-#define TNAME_RIGHT_SQUARE_BRACKET        "']'"
-#define TNAME_LEFT_BRACKET                "'{'"
-#define TNAME_RIGHT_BRACKET               "'}'"
-#define TNAME_OP_ADDITION                  "'+'"
-#define TNAME_OP_SUBTRACTION               "'-'"
-#define TNAME_OP_DIVISION                  "'/'"
-#define TNAME_OP_MULTIPLICATION            "'*'"
-#define TNAME_OP_REMAINDER                 "'^'"
-#define TNAME_OP_EXPONENTIATION            "'%'"
-#define TNAME_OP_EQUAL_TO                  "'=='"
-#define TNAME_OP_NOT_EQUAL_TO              "'!='"
-#define TNAME_OP_GREATER_THAN              "'>'"
-#define TNAME_OP_LESS_THAN                 "'<'"
-#define TNAME_OP_GREATER_THAN_OR_EQUAL_TO  "'>='"
-#define TNAME_OP_LESS_THAN_OR_EQUAL_TO     "'<='"
-#define TNAME_OP_LOGICAL_AND               "'&&'"
-#define TNAME_OP_LOGICAL_OR                "'||'"
-#define TNAME_OP_LOGICAL_NOT               "'!'"
-#define TNAME_OP_ASSIGNMENT                "'='"
-#define TNAME_OP_ADDITION_ASSIGNMENT       "'+='"
-#define TNAME_OP_SUBTRACTION_ASSIGNMENT    "'-='"
-#define TNAME_OP_MULTIPLICATION_ASSIGNMENT "'*='"
-#define TNAME_OP_DIVISION_ASSIGNMENT       "'/='"
-#define TNAME_KW_BOOL                      "BOOL"
-#define TNAME_KW_BREAK                     "BREAK"
-#define TNAME_KW_CASE                      "CASE"
-#define TNAME_KW_CONST                     "CONST"
-#define TNAME_KW_CONTINUE                  "CONTINUE"
-#define TNAME_KW_DEFAULT                   "DEFAULT"
-#define TNAME_KW_ELSE                      "ELSE"
-#define TNAME_KW_FALSE                     "FALSE"
-#define TNAME_KW_FOR                       "FOR"
-#define TNAME_KW_FUNC                      "FUNC"
-#define TNAME_KW_GO                        "GO"
-#define TNAME_KW_IF                        "IF"
-#define TNAME_KW_IMPORT                    "IMPORT"
-#define TNAME_KW_INT                       "INT"
-#define TNAME_KW_NIL                       "NIL"
-#define TNAME_KW_PRINT                     "PRINT"
-#define TNAME_KW_PRINTLN                   "PRINTLN"
-#define TNAME_KW_REAL                      "REAL"
-#define TNAME_KW_RETURN                    "RETURN"
-#define TNAME_KW_STRING                    "STRING"
-#define TNAME_KW_STRUCT                    "STRUCT"
-#define TNAME_KW_SWITCH                    "SWITCH"
-#define TNAME_KW_TRUE                      "TRUE"
-#define TNAME_KW_TYPE                      "TYPE"
-#define TNAME_KW_VAR                       "VAR"
-#define TNAME_KW_VOID                      "VOID"
-#define TNAME_KW_WHILE                     "WHILE"
+#define TOKEN_NAMES(TOKEN_NAME)                              \
+        TOKEN_NAME(ID,                           "id"       )\
+        TOKEN_NAME(INTEGER_LITERAL,              "integer"  )\
+        TOKEN_NAME(REAL_LITERAL,                 "real"     )\
+        TOKEN_NAME(STRING_LITERAL,               "string"   )\
+        TOKEN_NAME(COMMA,                        "','"      )\
+        TOKEN_NAME(COLON,                        "':'"      )\
+        TOKEN_NAME(SEMICOLON,                    "';'"      )\
+        TOKEN_NAME(LEFT_PARENTHESIS,             "'('"      )\
+        TOKEN_NAME(RIGHT_PARENTHESIS,            "')'"      )\
+        TOKEN_NAME(LEFT_SQUARE_BRACKET,          "'['"      )\
+        TOKEN_NAME(RIGHT_SQUARE_BRACKET,         "']'"      )\
+        TOKEN_NAME(LEFT_BRACKET,                 "'{'"      )\
+        TOKEN_NAME(RIGHT_BRACKET,                "'}'"      )\
+        TOKEN_NAME(OP_ADDITION,                  "'+'"      )\
+        TOKEN_NAME(OP_SUBTRACTION,               "'-'"      )\
+        TOKEN_NAME(OP_DIVISION,                  "'/'"      )\
+        TOKEN_NAME(OP_MULTIPLICATION,            "'*'"      )\
+        TOKEN_NAME(OP_REMAINDER,                 "'^'"      )\
+        TOKEN_NAME(OP_EXPONENTIATION,            "'%'"      )\
+        TOKEN_NAME(OP_EQUAL_TO,                  "'=='"     )\
+        TOKEN_NAME(OP_NOT_EQUAL_TO,              "'!='"     )\
+        TOKEN_NAME(OP_GREATER_THAN,              "'>'"      )\
+        TOKEN_NAME(OP_LESS_THAN,                 "'<'"      )\
+        TOKEN_NAME(OP_GREATER_THAN_OR_EQUAL_TO,  "'>='"     )\
+        TOKEN_NAME(OP_LESS_THAN_OR_EQUAL_TO,     "'<='"     )\
+        TOKEN_NAME(OP_LOGICAL_AND,               "'&&'"     )\
+        TOKEN_NAME(OP_LOGICAL_OR,                "'||'"     )\
+        TOKEN_NAME(OP_LOGICAL_NOT,               "'!'"      )\
+        TOKEN_NAME(OP_ASSIGNMENT,                "'='"      )\
+        TOKEN_NAME(OP_ADDITION_ASSIGNMENT,       "'+='"     )\
+        TOKEN_NAME(OP_SUBTRACTION_ASSIGNMENT,    "'-='"     )\
+        TOKEN_NAME(OP_MULTIPLICATION_ASSIGNMENT, "'*='"     )\
+        TOKEN_NAME(OP_DIVISION_ASSIGNMENT,       "'/='"     )\
+        TOKEN_NAME(KW_BOOL,                      "BOOL"     )\
+        TOKEN_NAME(KW_BREAK,                     "BREAK"    )\
+        TOKEN_NAME(KW_CASE,                      "CASE"     )\
+        TOKEN_NAME(KW_CONST,                     "CONST"    )\
+        TOKEN_NAME(KW_CONTINUE,                  "CONTINUE" )\
+        TOKEN_NAME(KW_DEFAULT,                   "DEFAULT"  )\
+        TOKEN_NAME(KW_ELSE,                      "ELSE"     )\
+        TOKEN_NAME(KW_FALSE,                     "FALSE"    )\
+        TOKEN_NAME(KW_FOR,                       "FOR"      )\
+        TOKEN_NAME(KW_FUNC,                      "FUNC"     )\
+        TOKEN_NAME(KW_GO,                        "GO"       )\
+        TOKEN_NAME(KW_IF,                        "IF"       )\
+        TOKEN_NAME(KW_IMPORT,                    "IMPORT"   )\
+        TOKEN_NAME(KW_INT,                       "INT"      )\
+        TOKEN_NAME(KW_NIL,                       "NIL"      )\
+        TOKEN_NAME(KW_PRINT,                     "PRINT"    )\
+        TOKEN_NAME(KW_PRINTLN,                   "PRINTLN"  )\
+        TOKEN_NAME(KW_REAL,                      "REAL"     )\
+        TOKEN_NAME(KW_RETURN,                    "RETURN"   )\
+        TOKEN_NAME(KW_STRING,                    "STRING"   )\
+        TOKEN_NAME(KW_STRUCT,                    "STRUCT"   )\
+        TOKEN_NAME(KW_SWITCH,                    "SWITCH"   )\
+        TOKEN_NAME(KW_TRUE,                      "TRUE"     )\
+        TOKEN_NAME(KW_TYPE,                      "TYPE"     )\
+        TOKEN_NAME(KW_VAR,                       "VAR"      )\
+        TOKEN_NAME(KW_VOID,                      "VOID"     )\
+        TOKEN_NAME(KW_WHILE,                     "WHILE"    )\
+
+/** Helpers **/
 
 const char* get_token_name(token_t token);
 

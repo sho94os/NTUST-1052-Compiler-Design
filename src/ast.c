@@ -1,9 +1,12 @@
-#include "ast.h"
-#include <stdlib.h>
-#include <stdarg.h>
-#include <stdio.h>
+/*
+ * ast.c
+ * Functions for maintaining a abstract syntax tree.
+ */
 
-#define AST_DUMP_SIZE 100000
+#include "ast.h"
+
+#include <stdlib.h>
+#include <stdio.h>
 
 ast_node_t* new_ast_node(ast_node_type_t type, int line_num, int column_num) {
     ast_node_t *ast_node = malloc(sizeof(ast_node_t));
@@ -49,34 +52,17 @@ void ast_node_insert_child(ast_node_t *node, ast_node_t *child) {
     }
 }
 
+#define GENERATE_CASE_FOR_AST_NODE_TYPE_NAMES(type_name) case type_name: return #type_name; break;
+
 const char* get_ast_node_type_name(ast_node_type_t type) {
     switch (type) {
-        case program:
-            return "program";
-            break;
-        case function_def:
-            return "function_def";
-            break;
-        case function_body:
-            return "function_body";
-            break;
-        case expression:
-            return "expression";
-            break;
-        case string_constant:
-            return "string_constant";
-            break;
-        case println_statement:
-            return "println_statement";
-            break;
-        case things:
-            return "things";
-            break;
-        case thing:
-            return "thing";
-            break;
+        AST_NODE_TYPES(GENERATE_CASE_FOR_AST_NODE_TYPE_NAMES)
     }
 }
+
+// Warning: Ugly code below.
+
+#define AST_DUMP_SIZE 100000
 
 int dump_ast_node_to_str(ast_node_t *ast_node, char *str, int written, int level) {
     if (level == 0) {
