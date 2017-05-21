@@ -16,7 +16,7 @@ bin/parser: src/standalone_parser.o src/tokens.o src/symbol_table.o src/ast.o
 	gcc $(CFLAGS) -o $@ $^ -ll
 
 bin/scanner: src/standalone_scanner.o src/tokens.o src/symbol_table.o
-	gcc $(CFLAGS) -o $@ $^ -ll
+	gcc $(CFLAGS) -o $@ $^ -ll -lm
 
 src/standalone_parser.o: src/standalone_parser.c src/y.tab.c
 	gcc $(CFLAGS) -o $@ -c $<

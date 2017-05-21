@@ -4,19 +4,57 @@
 
 #define LIST { column_num += strlen(yytext); strcat(buf, yytext); }
 
-#ifdef STANDALONE_SCANNER
-    #define LINE { printf("%d: %s", line_num++, buf); column_num = 1; buf[0] = '\0'; }
-    #define token(t)           { LIST; printf("<%s>\n",    get_token_name(t)); }
-    #define tokenSymbol(t, s)  { LIST; printf("<%s:%s>\n", get_token_name(t), s->identifier); }
-    #define tokenInteger(t, i) { LIST; printf("<%s:%d>\n", get_token_name(t), i); }
-    #define tokenString(t, s)  { LIST; printf("<%s:%s>\n", get_token_name(t), s); }
-#else
+#ifndef STANDALONE_SCANNER
     #define LINE { line_num++; column_num = 1; buf[0] = '\0'; }
     #define set_yylloc() { yylloc.first_line = line_num; yylloc.first_column = column_num; }
     #define token(t)           { LIST; set_yylloc(); return t; }
     #define tokenSymbol(t, s)  { LIST; set_yylloc(); yylval.symbol = s; return t; }
     #define tokenInteger(t, i) { LIST; set_yylloc(); yylval.integer = i; return t; }
+    #define tokenReal(t, s)    { LIST; set_yylloc(); yylval.string = s; return t; }
     #define tokenString(t, s)  { LIST; set_yylloc(); yylval.string = s; return t; }
+#else
+    #include <math.h>
+    #define OPTBUF_SIZE 4096
+    char optbuf[OPTBUF_SIZE];
+    int optbuf_w = 0;
+    #define LINE {                                                            \
+        printf("%d:%*c%s", line_num, 3 - (int)log10(line_num), ' ', buf);     \
+        if (optbuf_w > 0) {                                                   \
+            printf(" -> %s\n", optbuf);                                       \
+        }                                                                     \
+        optbuf_w = 0;                                                         \
+        line_num++; column_num = 1; buf[0] = '\0';                            \
+    }
+    #define token(t) {                                                        \
+        optbuf_w +=                                                           \
+          snprintf(optbuf + optbuf_w, OPTBUF_SIZE - optbuf_w,                 \
+            "<%s>", get_token_name(t));                                       \
+        LIST;                                                                 \
+    }
+    #define tokenSymbol(t, s) {                                               \
+        optbuf_w +=                                                           \
+          snprintf(optbuf + optbuf_w, OPTBUF_SIZE - optbuf_w,                 \
+            "<%s:%s>", get_token_name(t), s->identifier);                     \
+        LIST;                                                                 \
+    }
+    #define tokenInteger(t, i) {                                              \
+        optbuf_w +=                                                           \
+          snprintf(optbuf + optbuf_w, OPTBUF_SIZE - optbuf_w,                 \
+            "<%s:%d>", get_token_name(t), i);                                 \
+        LIST;                                                                 \
+    }
+    #define tokenReal(t, s) {                                                 \
+        optbuf_w +=                                                           \
+          snprintf(optbuf + optbuf_w, OPTBUF_SIZE - optbuf_w,                 \
+            "<%s:%s>", get_token_name(t), s);                                 \
+        LIST;                                                                 \
+    }
+    #define tokenString(t, s) {                                               \
+        optbuf_w +=                                                           \
+          snprintf(optbuf + optbuf_w, OPTBUF_SIZE - optbuf_w,                 \
+            "<%s:\"%s\">", get_token_name(t), s);                             \
+        LIST;                                                                 \
+    }
 #endif
 
 #define MAX_LINE_LENGTH 256
@@ -127,7 +165,7 @@ newline  \r?\n
  /** Real Literal **/
 
 <INITIAL>["+"-]?({decimals}"."{decimals}?{exponent}?|"."{decimals}{exponent}?|{decimals}{exponent}) {
-    tokenString(REAL_LITERAL, yytext)
+    tokenReal(REAL_LITERAL, yytext)
 }
 
  /** String Literal **/

@@ -1,69 +1,34 @@
-1: /* Sigma.go
-2:  *
-3:  * Compute sum = 1 + 2 + ... + n
-4:  */
-5: 
-6: // variables
-<CONST>
-<id:n>
-<'='>
-<integer:10>
-7: const n = 10
-<VAR>
-<id:sum>
-<INT>
-<'='>
-<integer:0>
-8: var sum int = 0
-<VAR>
-<id:index>
-<INT>
-9: var index int
-10:   
-11: // main function
-<FUNC>
-<VOID>
-<id:main>
-<'('>
-<')'>
-<'{'>
-12: func void main ( ) {
-<FOR>
-<'('>
-<id:index>
-<'='>
-<integer:0>
-<';'>
-<id:index>
-<'<='>
-<id:n>
-<';'>
-<'}'>
-<'{'>
-13:   for (index = 0; index <= n; } {
-<id:sum>
-<'='>
-<id:sum>
-<'+'>
-<id:index>
-14:     sum = sum + index
-<id:index>
-<'='>
-<id:index>
-<'+'>
-<integer:1>
-15:     index = index + 1
-<'}'>
-16:   } 
-<PRINT>
-<string:The sum is >
-17:   print "The sum is "
-<PRINTLN>
-<id:sum>
-18:   println sum
-<'}'>
-19: }
-20: 
+1:   /* Sigma.go
+2:    *
+3:    * Compute sum = 1 + 2 + ... + n
+4:    */
+5:   
+6:   // variables
+7:   const n = 10
+ -> <CONST><id:n><'='><integer:10>
+8:   var sum int = 0
+ -> <VAR><id:sum><INT><'='><integer:0>
+9:   var index int
+ -> <VAR><id:index><INT>
+10:    
+11:  // main function
+12:  func void main ( ) {
+ -> <FUNC><VOID><id:main><'('><')'><'{'>
+13:    for (index = 0; index <= n; } {
+ -> <FOR><'('><id:index><'='><integer:0><';'><id:index><'<='><id:n><';'><'}'><'{'>
+14:      sum = sum + index
+ -> <id:sum><'='><id:sum><'+'><id:index>
+15:      index = index + 1
+ -> <id:index><'='><id:index><'+'><integer:1>
+16:    } 
+ -> <'}'>
+17:    print "The sum is "
+ -> <PRINT><string:"The sum is ">
+18:    println sum
+ -> <PRINTLN><id:sum>
+19:  }
+ -> <'}'>
+20:  
 
 Symbol Table:
 0	n
