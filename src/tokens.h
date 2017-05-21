@@ -1,6 +1,6 @@
 /*
  * tokens.h
- * Declarations for the tokens.
+ * Declaration of tokens.
  */
 
 #ifndef TOKENS_H
@@ -22,35 +22,37 @@ typedef int token_t;
         TOKEN_NAME(INTEGER_LITERAL,              "integer"  )\
         TOKEN_NAME(REAL_LITERAL,                 "real"     )\
         TOKEN_NAME(STRING_LITERAL,               "string"   )\
-        TOKEN_NAME(COMMA,                        "','"      )\
-        TOKEN_NAME(COLON,                        "':'"      )\
-        TOKEN_NAME(SEMICOLON,                    "';'"      )\
-        TOKEN_NAME(LEFT_PARENTHESIS,             "'('"      )\
-        TOKEN_NAME(RIGHT_PARENTHESIS,            "')'"      )\
-        TOKEN_NAME(LEFT_SQUARE_BRACKET,          "'['"      )\
-        TOKEN_NAME(RIGHT_SQUARE_BRACKET,         "']'"      )\
-        TOKEN_NAME(LEFT_BRACKET,                 "'{'"      )\
-        TOKEN_NAME(RIGHT_BRACKET,                "'}'"      )\
-        TOKEN_NAME(OP_ADDITION,                  "'+'"      )\
-        TOKEN_NAME(OP_SUBTRACTION,               "'-'"      )\
-        TOKEN_NAME(OP_DIVISION,                  "'/'"      )\
-        TOKEN_NAME(OP_MULTIPLICATION,            "'*'"      )\
-        TOKEN_NAME(OP_REMAINDER,                 "'^'"      )\
-        TOKEN_NAME(OP_EXPONENTIATION,            "'%'"      )\
-        TOKEN_NAME(OP_EQUAL_TO,                  "'=='"     )\
-        TOKEN_NAME(OP_NOT_EQUAL_TO,              "'!='"     )\
-        TOKEN_NAME(OP_GREATER_THAN,              "'>'"      )\
-        TOKEN_NAME(OP_LESS_THAN,                 "'<'"      )\
-        TOKEN_NAME(OP_GREATER_THAN_OR_EQUAL_TO,  "'>='"     )\
-        TOKEN_NAME(OP_LESS_THAN_OR_EQUAL_TO,     "'<='"     )\
-        TOKEN_NAME(OP_LOGICAL_AND,               "'&&'"     )\
-        TOKEN_NAME(OP_LOGICAL_OR,                "'||'"     )\
-        TOKEN_NAME(OP_LOGICAL_NOT,               "'!'"      )\
-        TOKEN_NAME(OP_ASSIGNMENT,                "'='"      )\
-        TOKEN_NAME(OP_ADDITION_ASSIGNMENT,       "'+='"     )\
-        TOKEN_NAME(OP_SUBTRACTION_ASSIGNMENT,    "'-='"     )\
-        TOKEN_NAME(OP_MULTIPLICATION_ASSIGNMENT, "'*='"     )\
-        TOKEN_NAME(OP_DIVISION_ASSIGNMENT,       "'/='"     )\
+        TOKEN_NAME(COMMA,                        ","        )\
+        TOKEN_NAME(COLON,                        ":"        )\
+        TOKEN_NAME(SEMICOLON,                    ";"        )\
+        TOKEN_NAME(LEFT_PARENTHESIS,             "("        )\
+        TOKEN_NAME(RIGHT_PARENTHESIS,            ")"        )\
+        TOKEN_NAME(LEFT_SQUARE_BRACKET,          "["        )\
+        TOKEN_NAME(RIGHT_SQUARE_BRACKET,         "]"        )\
+        TOKEN_NAME(LEFT_BRACKET,                 "{"        )\
+        TOKEN_NAME(RIGHT_BRACKET,                "}"        )\
+        TOKEN_NAME(OP_ADDITION,                  "+"        )\
+        TOKEN_NAME(OP_SUBTRACTION,               "-"        )\
+        TOKEN_NAME(OP_DIVISION,                  "/"        )\
+        TOKEN_NAME(OP_MULTIPLICATION,            "*"        )\
+        TOKEN_NAME(OP_REMAINDER,                 "%"        )\
+        TOKEN_NAME(OP_EXPONENTIATION,            "^"        )\
+        TOKEN_NAME(OP_EQUAL_TO,                  "=="       )\
+        TOKEN_NAME(OP_NOT_EQUAL_TO,              "!="       )\
+        TOKEN_NAME(OP_GREATER_THAN,              "\">\""    )\
+        TOKEN_NAME(OP_LESS_THAN,                 "\"<\""    )\
+        TOKEN_NAME(OP_GREATER_THAN_OR_EQUAL_TO,  "\">=\""   )\
+        TOKEN_NAME(OP_LESS_THAN_OR_EQUAL_TO,     "\"<=\""   )\
+        TOKEN_NAME(OP_LOGICAL_AND,               "&&"       )\
+        TOKEN_NAME(OP_LOGICAL_OR,                "||"       )\
+        TOKEN_NAME(OP_BINARY_AND,                "&"        )\
+        TOKEN_NAME(OP_BINARY_OR,                 "|"        )\
+        TOKEN_NAME(OP_NOT,                       "!"        )\
+        TOKEN_NAME(OP_ASSIGNMENT,                "="        )\
+        TOKEN_NAME(OP_ADDITION_ASSIGNMENT,       "+="       )\
+        TOKEN_NAME(OP_SUBTRACTION_ASSIGNMENT,    "-="       )\
+        TOKEN_NAME(OP_MULTIPLICATION_ASSIGNMENT, "*="       )\
+        TOKEN_NAME(OP_DIVISION_ASSIGNMENT,       "/="       )\
         TOKEN_NAME(KW_BOOL,                      "BOOL"     )\
         TOKEN_NAME(KW_BREAK,                     "BREAK"    )\
         TOKEN_NAME(KW_CASE,                      "CASE"     )\
@@ -79,8 +81,15 @@ typedef int token_t;
         TOKEN_NAME(KW_VOID,                      "VOID"     )\
         TOKEN_NAME(KW_WHILE,                     "WHILE"    )\
 
+#define HTML_TOKEN_NAMES(HTML_TOKEN_NAME)                    \
+        HTML_TOKEN_NAME(OP_GREATER_THAN,             "&gt;" )\
+        HTML_TOKEN_NAME(OP_LESS_THAN,                "&lt;" )\
+        HTML_TOKEN_NAME(OP_GREATER_THAN_OR_EQUAL_TO, "&gt;=")\
+        HTML_TOKEN_NAME(OP_LESS_THAN_OR_EQUAL_TO,    "&lt;=")\
+
 /** Helpers **/
 
 const char* get_token_name(token_t token);
+const char* get_html_token_name(token_t token);
 
 #endif

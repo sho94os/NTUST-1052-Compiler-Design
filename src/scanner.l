@@ -6,12 +6,12 @@
 
 #ifndef STANDALONE_SCANNER
     #define LINE { line_num++; column_num = 1; buf[0] = '\0'; }
-    #define set_yylloc() { yylloc.first_line = line_num; yylloc.first_column = column_num; }
-    #define token(t)           { LIST; set_yylloc(); return t; }
-    #define tokenSymbol(t, s)  { LIST; set_yylloc(); yylval.symbol = s; return t; }
-    #define tokenInteger(t, i) { LIST; set_yylloc(); yylval.integer = i; return t; }
-    #define tokenReal(t, s)    { LIST; set_yylloc(); yylval.string = s; return t; }
-    #define tokenString(t, s)  { LIST; set_yylloc(); yylval.string = s; return t; }
+    #define sloc() { yylloc.first_line = line_num; yylloc.first_column = column_num; }
+    #define token(t)           { LIST; sloc(); yylval.integer = t; return t; }
+    #define tokenSymbol(t, s)  { LIST; sloc(); yylval.symbol = s; return t; }
+    #define tokenInteger(t, i) { LIST; sloc(); yylval.integer = i; return t; }
+    #define tokenReal(t, s)    { LIST; sloc(); yylval.string = s; return t; }
+    #define tokenString(t, s)  { LIST; sloc(); yylval.string = s; return t; }
 #else
     #include <math.h>
     #define OPTBUF_SIZE 4096
@@ -107,7 +107,7 @@ newline  \r?\n
 
 <INITIAL>"&&"                   { token(OP_LOGICAL_AND); }
 <INITIAL>"||"                   { token(OP_LOGICAL_OR); }
-<INITIAL>"!"                    { token(OP_LOGICAL_NOT); }
+<INITIAL>"!"                    { token(OP_NOT); }
 
 <INITIAL>"="                    { token(OP_ASSIGNMENT); }
 
@@ -135,6 +135,7 @@ newline  \r?\n
 <INITIAL>"nil"                  { token(KW_NIL); }
 <INITIAL>"print"                { token(KW_PRINT); }
 <INITIAL>"println"              { token(KW_PRINTLN); }
+<INITIAL>"read"                 { token(KW_READ); }
 <INITIAL>"real"                 { token(KW_REAL); }
 <INITIAL>"return"               { token(KW_RETURN); }
 <INITIAL>"string"               { token(KW_STRING); }

@@ -5,29 +5,29 @@
 5:   
 6:   // variables
 7:   const n = 10
- -> <CONST><id:n><'='><integer:10>
+ -> <CONST><id:n><=><integer:10>
 8:   var sum int = 0
- -> <VAR><id:sum><INT><'='><integer:0>
+ -> <VAR><id:sum><INT><=><integer:0>
 9:   var index int
  -> <VAR><id:index><INT>
 10:    
 11:  // main function
 12:  func void main ( ) {
- -> <FUNC><VOID><id:main><'('><')'><'{'>
+ -> <FUNC><VOID><id:main><(><)><{>
 13:    for (index = 0; index <= n; } {
- -> <FOR><'('><id:index><'='><integer:0><';'><id:index><'<='><id:n><';'><'}'><'{'>
+ -> <FOR><(><id:index><=><integer:0><;><id:index><"<="><id:n><;><}><{>
 14:      sum = sum + index
- -> <id:sum><'='><id:sum><'+'><id:index>
+ -> <id:sum><=><id:sum><+><id:index>
 15:      index = index + 1
- -> <id:index><'='><id:index><'+'><integer:1>
+ -> <id:index><=><id:index><+><integer:1>
 16:    } 
- -> <'}'>
+ -> <}>
 17:    print "The sum is "
  -> <PRINT><string:"The sum is ">
 18:    println sum
  -> <PRINTLN><id:sum>
 19:  }
- -> <'}'>
+ -> <}>
 20:  
 
 Symbol Table:

@@ -2,23 +2,21 @@
   "type": "program",
   "children": [
     {
-      "type": "function_def",
+      "type": "func_def",
       "value": "main(id)",
       "children": [
         {
-          "type": "function_body",
+          "type": "func_args"
+        },
+        {
+          "type": "func_body",
           "children": [
             {
-              "type": "println_statement",
+              "type": "println",
               "children": [
                 {
-                  "type": "expression",
-                  "children": [
-                    {
-                      "type": "string_constant",
-                      "value": "hello world"
-                    }
-                  ]
+                  "type": "string",
+                  "value": "hello world"
                 }
               ]
             }

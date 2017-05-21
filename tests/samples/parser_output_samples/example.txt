@@ -1,0 +1,163 @@
+{
+  "type": "program",
+  "children": [
+    {
+      "type": "var_dec",
+      "value": "a(id)",
+      "children": [
+        {
+          "type": "integer",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "type": "var_dec",
+      "value": "c(id)"
+    },
+    {
+      "type": "func_def",
+      "value": "add(id)",
+      "children": [
+        {
+          "type": "func_args",
+          "children": [
+            {
+              "type": "func_arg",
+              "value": "a(id)"
+            },
+            {
+              "type": "func_arg",
+              "value": "b(id)"
+            }
+          ]
+        },
+        {
+          "type": "func_body",
+          "children": [
+            {
+              "type": "return",
+              "children": [
+                {
+                  "type": "operation",
+                  "value": "+",
+                  "children": [
+                    {
+                      "type": "id",
+                      "value": "a(id)"
+                    },
+                    {
+                      "type": "id",
+                      "value": "b(id)"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "func_def",
+      "value": "main(id)",
+      "children": [
+        {
+          "type": "func_args"
+        },
+        {
+          "type": "func_body",
+          "children": [
+            {
+              "type": "assign",
+              "value": "c(id)",
+              "children": [
+                {
+                  "type": "func_invo",
+                  "value": "add(id)",
+                  "children": [
+                    {
+                      "type": "func_invo_args",
+                      "children": [
+                        {
+                          "type": "id",
+                          "value": "a(id)"
+                        },
+                        {
+                          "type": "integer",
+                          "value": 10
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "condition",
+              "children": [
+                {
+                  "type": "operation",
+                  "value": "">"",
+                  "children": [
+                    {
+                      "type": "id",
+                      "value": "c(id)"
+                    },
+                    {
+                      "type": "integer",
+                      "value": 10
+                    }
+                  ]
+                },
+                {
+                  "type": "block",
+                  "children": [
+                    {
+                      "type": "print",
+                      "children": [
+                        {
+                          "type": "operation",
+                          "value": "-",
+                          "children": [
+                            {
+                              "type": "id",
+                              "value": "c(id)"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "block",
+                  "children": [
+                    {
+                      "type": "print",
+                      "children": [
+                        {
+                          "type": "id",
+                          "value": "c(id)"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "println",
+              "children": [
+                {
+                  "type": "string",
+                  "value": "Hello World"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

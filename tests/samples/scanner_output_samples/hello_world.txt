@@ -1,10 +1,10 @@
 1:   // print hello world
 2:   func main( ) {
- -> <FUNC><id:main><'('><')'><'{'>
+ -> <FUNC><id:main><(><)><{>
 3:       println ("hello world")  // print the message
- -> <PRINTLN><'('><string:"hello world"><')'>
+ -> <PRINTLN><(><string:"hello world"><)>
 4:   }
- -> <'}'>
+ -> <}>
 
 Symbol Table:
 0	main

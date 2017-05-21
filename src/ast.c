@@ -4,6 +4,7 @@
  */
 
 #include "ast.h"
+#include "tokens.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -24,6 +25,12 @@ void ast_node_set_value_symbol(ast_node_t *ast_node, const symbol_table_entry_t 
     ast_node->has_value = true;
     ast_node->value_type = symbol;
     ast_node->value.symbol = symbol_table_entry;
+}
+
+void ast_node_set_value_operatr(ast_node_t *ast_node, int value) {
+    ast_node->has_value = true;
+    ast_node->value_type = operatr;
+    ast_node->value.operatr = value;
 }
 
 void ast_node_set_value_integer(ast_node_t *ast_node, int value) {
@@ -47,12 +54,20 @@ void ast_node_insert_child(ast_node_t *node, ast_node_t *child) {
     if (!node->child) {
         node->child = child;
     } else {
-        ast_node_t *last_child_sibling = find_last_sibling(node->child);
-        last_child_sibling->sibling = child;
+        ast_node_insert_sibling(node->child, child);
     }
 }
 
-#define GENERATE_CASE_FOR_AST_NODE_TYPE_NAMES(type_name) case type_name: return #type_name; break;
+void ast_node_insert_sibling(ast_node_t *node, ast_node_t *sibling) {
+    if (!node->sibling) {
+        node->sibling = sibling;
+    } else {
+        ast_node_t *last_sibling = find_last_sibling(node->sibling);
+        last_sibling->sibling = sibling;
+    }
+}
+
+#define GENERATE_CASE_FOR_AST_NODE_TYPE_NAMES(type_name) case type_name: return #type_name + 4; break;
 
 const char* get_ast_node_type_name(ast_node_type_t type) {
     switch (type) {
@@ -75,6 +90,9 @@ int dump_ast_node_to_str(ast_node_t *ast_node, char *str, int written, int level
 
     if (ast_node->has_value) {
         switch (ast_node->value_type) {
+            case operatr:
+                written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": \"%s\"", level * 4 + 2, ' ', get_token_name(ast_node->value.operatr));
+                break;
             case symbol:
                 written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": \"%s(%p)\"", level * 4 + 2, ' ', ast_node->value.symbol->identifier, ast_node->value.symbol);
                 break;
@@ -126,6 +144,9 @@ int list_graphviz_node(ast_node_t *ast_node, char *str, int written, bool use_me
 
     if (ast_node->has_value) {
         switch (ast_node->value_type) {
+            case operatr:
+                written += snprintf(str + written, AST_DUMP_SIZE - written, "\\n%s", get_html_token_name(ast_node->value.operatr));
+                break;
             case symbol:
                 written += snprintf(str + written, AST_DUMP_SIZE - written, "\\n%s(%p)", ast_node->value.symbol->identifier, ast_node->value.symbol);
                 break;

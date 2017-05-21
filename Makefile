@@ -33,7 +33,7 @@ src/y.tab.h src/y.tab.c: src/parser.y src/lex.yy.c
 src/tokens.o: src/tokens.c src/tokens.h src/y.tab.h
 	gcc $(CFLAGS) -o $@ -c $<
 
-src/%.o: src/%.c src/%.h
+src/%.o: src/%.c src/%.h src/y.tab.h
 	gcc $(CFLAGS) -o $@ -c $<
 
 %-check: tests/%-check
@@ -45,10 +45,10 @@ parser-test: bin/parser
 scanner-test: bin/scanner
 	tests/scanner-test.bats
 
-tests/%-check: src/%.o tests/%-check.o
+tests/%-check: src/%.o tests/%-check.o src/tokens.o
 	gcc $(CFLAGS) -w $^ -o $@ `pkg-config --cflags --libs check`
 
-tests/%-check.o: tests/%-check.c
+tests/%-check.o: tests/%-check.c src/y.tab.h
 	gcc $(CFLAGS) -w -c $< -o $@
 
 tests/%-check.c: tests/%-test.check

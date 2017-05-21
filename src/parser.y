@@ -7,12 +7,16 @@
 #else
 #endif
 
+/** Shorthands For Commonly Used Code **/
 ast_node_t* n(ast_node_type_t t, YYLTYPE l) { return new_ast_node(t, l.first_line, l.first_column); }
 void vsym(ast_node_t *n, symbol_table_entry_t *v) { ast_node_set_value_symbol(n, v); }
+void vopt(ast_node_t *n, int v) { ast_node_set_value_operatr(n, v); }
 void vint(ast_node_t *n, int v) { ast_node_set_value_integer(n, v); }
 void vstr(ast_node_t *n, char *v) { ast_node_set_value_string(n, v); }
 void ich(ast_node_t *n, ast_node_t *child) { ast_node_insert_child(n, child); }
+void isb(ast_node_t *n, ast_node_t *sibling) { ast_node_insert_sibling(n, sibling); }
 
+/** Globals **/
 ast_node_t* ast_root;
 bool has_error = false;
 %}
@@ -58,30 +62,27 @@ bool has_error = false;
 
 /** Arithmetic, Relational, and Logical Operators **/
 
-%left OP_ADDITION
-%left OP_SUBTRACTION
-%left OP_DIVISION
-%left OP_MULTIPLICATION
-%left OP_REMAINDER
-%right OP_EXPONENTIATION
+%left <integer> OP_LOGICAL_OR
+%left <integer> OP_LOGICAL_AND
 
-%nonassoc OP_EQUAL_TO
-%nonassoc OP_NOT_EQUAL_TO
-%nonassoc OP_GREATER_THAN
-%nonassoc OP_LESS_THAN
-%nonassoc OP_GREATER_THAN_OR_EQUAL_TO
-%nonassoc OP_LESS_THAN_OR_EQUAL_TO
+%left <integer> OP_BINARY_AND OP_BINARY_OR
 
-%left OP_LOGICAL_AND
-%left OP_LOGICAL_OR
-%left OP_LOGICAL_NOT
+%left <integer> OP_NOT
 
-%right OP_ASSIGNMENT
+%nonassoc <integer> OP_EQUAL_TO OP_NOT_EQUAL_TO
+                    OP_GREATER_THAN OP_LESS_THAN
+                    OP_GREATER_THAN_OR_EQUAL_TO OP_LESS_THAN_OR_EQUAL_TO
 
-%right OP_ADDITION_ASSIGNMENT
-%right OP_SUBTRACTION_ASSIGNMENT
-%right OP_MULTIPLICATION_ASSIGNMENT
-%right OP_DIVISION_ASSIGNMENT
+%left <integer> OP_ADDITION OP_SUBTRACTION
+%left <integer> OP_MULTIPLICATION OP_DIVISION OP_REMAINDER
+%right <integer> OP_EXPONENTIATION
+
+%right <integer> OP_ASSIGNMENT
+
+%right <integer> OP_ADDITION_ASSIGNMENT
+%right <integer> OP_SUBTRACTION_ASSIGNMENT
+%right <integer> OP_MULTIPLICATION_ASSIGNMENT
+%right <integer> OP_DIVISION_ASSIGNMENT
 
 /** Keywords **/
 
@@ -102,6 +103,7 @@ bool has_error = false;
 %token KW_NIL
 %token KW_PRINT
 %token KW_PRINTLN
+%token KW_READ
 %token KW_REAL
 %token KW_RETURN
 %token KW_STRING
@@ -113,64 +115,273 @@ bool has_error = false;
 %token KW_VOID
 %token KW_WHILE
 
-/** Nonterminals **/
+/** Type Declarations **/
+
+%type <symbol> id
 
 %type <ast_node> program
-%type <symbol>   identifier
-%type <ast_node> function_def
-%type <ast_node> function_body
-%type <ast_node> statement
-%type <ast_node> println_statement
-%type <ast_node> expression
-%type <ast_node> string_constant
+%type <ast_node> id_eval
+%type <ast_node> func_def
+%type <ast_node> func_args
+%type <ast_node> func_arg_list
+%type <ast_node> func_arg
+%type <ast_node> func_body
+%type <ast_node> const_dec
+%type <ast_node> var_dec
+%type <ast_node> stmt
+%type <ast_node> assign_stmt
+%type <ast_node> array_assign_stmt
+%type <ast_node> func_invo_stmt
+%type <ast_node> func_invo_args
+%type <ast_node> func_invo_arg_list
+%type <ast_node> func_invo_arg
+%type <ast_node> print_stmt
+%type <ast_node> println_stmt
+%type <ast_node> read_stmt
+%type <ast_node> return_stmt
+%type <ast_node> expr
+%type <ast_node> block
+%type <ast_node> block_body
+%type <ast_node> cond
+%type <ast_node> cond_body
+%type <ast_node> literals
+%type <ast_node> integer_literal
+%type <ast_node> real_literal
+%type <ast_node> string_literal
 
 %%
 
 /** Program **/
 
-program : program function_def { $$ = $1; ich($$, $2); }
-        | { $$ = n(program, @$); ast_root = $$; }
+program : program var_dec { ich($$, $2); }
+        | program const_dec { ich($$, $2); }
+        | program func_def { ich($$, $2); }
+        | { $$ = n(ast_program, @$); ast_root = $$; }
         ;
 
 /** Identifier **/
 
-identifier : ID { $$ = $1; } ;
+id : ID ;
+
+id_eval : ID { $$ = n(ast_id, @$); vsym($$, $1); } ;
+
+/** Types **/
+
+type : KW_BOOL
+     | KW_INT
+     | KW_REAL
+     | KW_STRING
+     ;
+
+type_with_void : type
+               | KW_VOID
+               ;
+
+type_optional : type_with_void
+              |
+              ;
 
 /** Functions **/
 
-function_def :
-    KW_FUNC identifier LEFT_PARENTHESIS RIGHT_PARENTHESIS LEFT_BRACKET function_body RIGHT_BRACKET {
-        $$ = n(function_def, @$); vsym($$, $2); ich($$, $6);
+func_def :
+    KW_FUNC type_with_void ID LEFT_PARENTHESIS func_args RIGHT_PARENTHESIS LEFT_BRACKET func_body RIGHT_BRACKET {
+        $$ = n(ast_func_def, @$);
+        vsym($$, $3);
+        ich($$, $5);
+        ich($$, $8);
+        // TODO: Deal with the type
+    }
+|
+    KW_FUNC ID LEFT_PARENTHESIS func_args RIGHT_PARENTHESIS LEFT_BRACKET func_body RIGHT_BRACKET {
+        $$ = n(ast_func_def, @$);
+        vsym($$, $2);
+        ich($$, $4);
+        ich($$, $7);
+        // TODO: Set type to void
     }
 ;
 
-function_body : function_body statement { $$ = $1; ich($$, $2); }
-              | { $$ = n(function_body, @$); }
+func_args : func_arg_list { $$ = n(ast_func_args, @$); ich($$, $1); }
+          | { $$ = n(ast_func_args, @$); }
+          ;
+
+func_arg_list : func_arg
+              | func_arg_list COMMA func_arg { isb($$, $3); }
               ;
+
+func_arg : id type {
+    $$ = n(ast_func_arg, @$);
+    vsym($$, $1);
+    // TODO: Deal with the type
+} ;
+
+func_body : func_body var_dec { ich($$, $2); }
+          | func_body const_dec { ich($$, $2); }
+          | func_body stmt { ich($$, $2); }
+          | { $$ = n(ast_func_body, @$); }
+          ;
+
+/** Constant Declarations **/
+
+const_dec : KW_CONST id OP_ASSIGNMENT expr {
+    $$ = n(ast_const_dec, @$);
+    vsym($$, $2);
+    ich($$, $4);
+    // TODO: Deal with the type
+} ;
+
+/** Variable Declarations **/
+
+var_dec :
+    KW_VAR id type {
+        $$ = n(ast_var_dec, @$);
+        vsym($$, $2);
+        // TODO: Deal with the type
+    }
+|
+    KW_VAR id type OP_ASSIGNMENT expr {
+        $$ = n(ast_var_dec, @$);
+        vsym($$, $2);
+        ich($$, $5);
+        // TODO: Deal with the type
+    }
+|
+    KW_VAR id LEFT_SQUARE_BRACKET expr RIGHT_SQUARE_BRACKET type {
+        // TODO
+    }
+;
 
 /** Statements **/
 
-statement : println_statement
-          ;
+stmt : assign_stmt
+     | array_assign_stmt
+     | func_invo_stmt
+     | print_stmt
+     | println_stmt
+     | read_stmt
+     | return_stmt
+     | cond
+     ;
 
-println_statement :
-    KW_PRINTLN expression {
-        $$ = n(println_statement, @$); ich($$, $2);
-    }
-|
-    KW_PRINTLN LEFT_PARENTHESIS expression RIGHT_PARENTHESIS {
-        $$ = n(println_statement, @$); ich($$, $3);
+assign_stmt :
+    id OP_ASSIGNMENT expr {
+        $$ = n(ast_assign, @$);
+        vsym($$, $1);
+        ich($$, $3);
     }
 ;
 
+array_assign_stmt :
+    id LEFT_SQUARE_BRACKET expr RIGHT_SQUARE_BRACKET OP_ASSIGNMENT expr {
+        // TODO
+    }
+;
+
+func_invo_stmt :
+    id LEFT_PARENTHESIS func_invo_args RIGHT_PARENTHESIS {
+        $$ = n(ast_func_invo, @$);
+        vsym($$, $1);
+        ich($$, $3);
+    }
+;
+
+func_invo_args : func_invo_arg_list { $$ = n(ast_func_invo_args, @$); ich($$, $1); }
+               | { $$ = n(ast_func_invo_args, @$); }
+               ;
+
+func_invo_arg_list : func_invo_arg
+                   | func_invo_arg_list COMMA func_invo_arg { isb($$, $3); }
+                   ;
+
+func_invo_arg : expr
+              ;
+
+print_stmt : KW_PRINT expr { $$ = n(ast_print, @$); ich($$, $2); } ;
+
+println_stmt : KW_PRINTLN expr { $$ = n(ast_println, @$); ich($$, $2); } ;
+
+read_stmt : KW_READ id { $$ = n(ast_read, @$); vsym($$, $2); } ;
+
+return_stmt : KW_RETURN { $$ = n(ast_return, @$); }
+            | KW_RETURN expr { $$ = n(ast_return, @$); ich($$, $2); }
+            ;
+
 /** Expressions **/
 
-expression : string_constant { $$ = n(expression, @$); ich($$, $1); }
+expr : LEFT_PARENTHESIS expr RIGHT_PARENTHESIS { $$ = $2; }
+     | OP_SUBTRACTION expr { $$ = n(ast_operation, @$); vopt($$, $1); ich($$, $2); }
+     | OP_NOT expr { $$ = n(ast_operation, @$); vopt($$, $1); ich($$, $2); }
+     | expr OP_EXPONENTIATION expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
+     | expr OP_MULTIPLICATION expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
+     | expr OP_DIVISION expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
+     | expr OP_REMAINDER expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
+     | expr OP_ADDITION expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
+     | expr OP_SUBTRACTION expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
+     | expr OP_EQUAL_TO expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
+     | expr OP_NOT_EQUAL_TO expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
+     | expr OP_GREATER_THAN expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
+     | expr OP_LESS_THAN expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
+     | expr OP_GREATER_THAN_OR_EQUAL_TO expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
+     | expr OP_LESS_THAN_OR_EQUAL_TO expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
+     | expr OP_BINARY_AND expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
+     | expr OP_BINARY_OR expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
+     | expr OP_LOGICAL_AND expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
+     | expr OP_LOGICAL_OR expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
+     | stmt
+     | id_eval
+     | literals
+     ;
+
+/** Block **/
+
+block : LEFT_BRACKET block_body RIGHT_BRACKET { $$ = $2; }
+      ;
+
+block_body : block_body var_dec { ich($$, $2); }
+           | block_body const_dec { ich($$, $2); }
+           | block_body stmt { ich($$, $2); }
+           | { $$ = n(ast_block, @$); }
            ;
 
-/** Constants **/
+/** Conditional **/
 
-string_constant : STRING_LITERAL { $$ = n(string_constant, @$); vstr($$, yylval.string); } ;
+cond :
+    KW_IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS cond_body {
+        $$ = n(ast_condition, @$);
+        ich($$, $3);
+        ich($$, $5);
+    }
+|
+    KW_IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS cond_body KW_ELSE cond_body {
+        $$ = n(ast_condition, @$);
+        ich($$, $3);
+        ich($$, $5);
+        ich($$, $7);
+    }
+;
+
+cond_body : stmt
+          | block
+          ;
+
+/** Loop **/
+
+// TODO
+
+/** Procedure Invocation **/
+
+// TODO
+
+/** Literals **/
+
+literals : integer_literal
+         | real_literal
+         | string_literal
+         ;
+
+integer_literal : INTEGER_LITERAL { $$ = n(ast_integer, @$); vint($$, $1); } ;
+real_literal :    REAL_LITERAL    { $$ = n(ast_real, @$);    vstr($$, $1); } ;
+string_literal :  STRING_LITERAL  { $$ = n(ast_string, @$);  vstr($$, $1); } ;
 
 %%
 
