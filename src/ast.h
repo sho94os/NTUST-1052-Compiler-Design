@@ -17,23 +17,26 @@
         AST_NODE_TYPE(ast_func_args)               \
         AST_NODE_TYPE(ast_func_arg)                \
         AST_NODE_TYPE(ast_func_body)               \
-        AST_NODE_TYPE(ast_var_dec)                 \
         AST_NODE_TYPE(ast_const_dec)               \
+        AST_NODE_TYPE(ast_var_dec)                 \
+        AST_NODE_TYPE(ast_arr_dec)                 \
         AST_NODE_TYPE(ast_id)                      \
         AST_NODE_TYPE(ast_assign)                  \
         AST_NODE_TYPE(ast_func_invo)               \
         AST_NODE_TYPE(ast_func_invo_args)          \
-        AST_NODE_TYPE(ast_array_assign)            \
+        AST_NODE_TYPE(ast_arr_assign)              \
         AST_NODE_TYPE(ast_print)                   \
         AST_NODE_TYPE(ast_println)                 \
         AST_NODE_TYPE(ast_read)                    \
         AST_NODE_TYPE(ast_return)                  \
         AST_NODE_TYPE(ast_operation)               \
         AST_NODE_TYPE(ast_condition)               \
+        AST_NODE_TYPE(ast_for_loop)                \
         AST_NODE_TYPE(ast_block)                   \
         AST_NODE_TYPE(ast_integer)                 \
         AST_NODE_TYPE(ast_real)                    \
         AST_NODE_TYPE(ast_string)                  \
+        AST_NODE_TYPE(ast_null)                    \
         AST_NODE_TYPE(ast_things)                  \
         AST_NODE_TYPE(ast_thing)
 #define GENERATE_ENUM_FOR_AST_NODE_TYPES(type_name) type_name,

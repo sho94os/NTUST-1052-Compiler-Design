@@ -77,12 +77,12 @@ bool has_error = false;
 %left <integer> OP_MULTIPLICATION OP_DIVISION OP_REMAINDER
 %right <integer> OP_EXPONENTIATION
 
-%right <integer> OP_ASSIGNMENT
+%token <integer> OP_ASSIGNMENT
 
-%right <integer> OP_ADDITION_ASSIGNMENT
-%right <integer> OP_SUBTRACTION_ASSIGNMENT
-%right <integer> OP_MULTIPLICATION_ASSIGNMENT
-%right <integer> OP_DIVISION_ASSIGNMENT
+%token <integer> OP_ADDITION_ASSIGNMENT
+%token <integer> OP_SUBTRACTION_ASSIGNMENT
+%token <integer> OP_MULTIPLICATION_ASSIGNMENT
+%token <integer> OP_DIVISION_ASSIGNMENT
 
 /** Keywords **/
 
@@ -129,6 +129,7 @@ bool has_error = false;
 %type <ast_node> const_dec
 %type <ast_node> var_dec
 %type <ast_node> stmt
+%type <ast_node> stmt_optional
 %type <ast_node> assign_stmt
 %type <ast_node> array_assign_stmt
 %type <ast_node> func_invo_stmt
@@ -144,6 +145,8 @@ bool has_error = false;
 %type <ast_node> block_body
 %type <ast_node> cond
 %type <ast_node> cond_body
+%type <ast_node> for_loop
+%type <ast_node> loop_body
 %type <ast_node> literals
 %type <ast_node> integer_literal
 %type <ast_node> real_literal
@@ -173,18 +176,18 @@ type : KW_BOOL
      | KW_STRING
      ;
 
-type_with_void : type
-               | KW_VOID
-               ;
+type_including_void : type
+                    | KW_VOID
+                    ;
 
-type_optional : type_with_void
+type_optional : type_including_void
               |
               ;
 
 /** Functions **/
 
 func_def :
-    KW_FUNC type_with_void ID LEFT_PARENTHESIS func_args RIGHT_PARENTHESIS LEFT_BRACKET func_body RIGHT_BRACKET {
+    KW_FUNC type_including_void ID LEFT_PARENTHESIS func_args RIGHT_PARENTHESIS LEFT_BRACKET func_body RIGHT_BRACKET {
         $$ = n(ast_func_def, @$);
         vsym($$, $3);
         ich($$, $5);
@@ -247,7 +250,10 @@ var_dec :
     }
 |
     KW_VAR id LEFT_SQUARE_BRACKET expr RIGHT_SQUARE_BRACKET type {
-        // TODO
+        $$ = n(ast_arr_dec, @$);
+        vsym($$, $2);
+        ich($$, $4);
+        // TODO: Deal with the type
     }
 ;
 
@@ -261,7 +267,12 @@ stmt : assign_stmt
      | read_stmt
      | return_stmt
      | cond
+     | for_loop
      ;
+
+stmt_optional : stmt
+              | { $$ = n(ast_null, @$); }
+              ;
 
 assign_stmt :
     id OP_ASSIGNMENT expr {
@@ -273,7 +284,10 @@ assign_stmt :
 
 array_assign_stmt :
     id LEFT_SQUARE_BRACKET expr RIGHT_SQUARE_BRACKET OP_ASSIGNMENT expr {
-        // TODO
+        $$ = n(ast_arr_assign, @$);
+        vsym($$, $1);
+        ich($$, $3);
+        ich($$, $6);
     }
 ;
 
@@ -327,7 +341,12 @@ expr : LEFT_PARENTHESIS expr RIGHT_PARENTHESIS { $$ = $2; }
      | expr OP_BINARY_OR expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
      | expr OP_LOGICAL_AND expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
      | expr OP_LOGICAL_OR expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
-     | stmt
+     | assign_stmt
+     | array_assign_stmt
+     | func_invo_stmt
+     | print_stmt
+     | println_stmt
+     | read_stmt
      | id_eval
      | literals
      ;
@@ -366,7 +385,19 @@ cond_body : stmt
 
 /** Loop **/
 
-// TODO
+for_loop :
+    KW_FOR LEFT_PARENTHESIS stmt_optional SEMICOLON expr SEMICOLON stmt_optional RIGHT_PARENTHESIS loop_body {
+        $$ = n(ast_for_loop, @$);
+        ich($$, $3);
+        ich($$, $5);
+        ich($$, $7);
+        ich($$, $9);
+    }
+;
+
+loop_body : stmt
+          | block
+          ;
 
 /** Procedure Invocation **/
 

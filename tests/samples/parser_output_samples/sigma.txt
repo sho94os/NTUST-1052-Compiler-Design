@@ -1,0 +1,138 @@
+{
+  "type": "program",
+  "children": [
+    {
+      "type": "const_dec",
+      "value": "n(id)",
+      "children": [
+        {
+          "type": "integer",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "type": "var_dec",
+      "value": "sum(id)",
+      "children": [
+        {
+          "type": "integer",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "type": "var_dec",
+      "value": "index(id)"
+    },
+    {
+      "type": "func_def",
+      "value": "main(id)",
+      "children": [
+        {
+          "type": "func_args"
+        },
+        {
+          "type": "func_body",
+          "children": [
+            {
+              "type": "for_loop",
+              "children": [
+                {
+                  "type": "assign",
+                  "value": "index(id)",
+                  "children": [
+                    {
+                      "type": "integer",
+                      "value": 0
+                    }
+                  ]
+                },
+                {
+                  "type": "operation",
+                  "value": ""<="",
+                  "children": [
+                    {
+                      "type": "id",
+                      "value": "index(id)"
+                    },
+                    {
+                      "type": "id",
+                      "value": "n(id)"
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "block",
+                  "children": [
+                    {
+                      "type": "assign",
+                      "value": "sum(id)",
+                      "children": [
+                        {
+                          "type": "operation",
+                          "value": "+",
+                          "children": [
+                            {
+                              "type": "id",
+                              "value": "sum(id)"
+                            },
+                            {
+                              "type": "id",
+                              "value": "index(id)"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "assign",
+                      "value": "index(id)",
+                      "children": [
+                        {
+                          "type": "operation",
+                          "value": "+",
+                          "children": [
+                            {
+                              "type": "id",
+                              "value": "index(id)"
+                            },
+                            {
+                              "type": "integer",
+                              "value": 1
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "print",
+              "children": [
+                {
+                  "type": "string",
+                  "value": "The sum is "
+                }
+              ]
+            },
+            {
+              "type": "println",
+              "children": [
+                {
+                  "type": "id",
+                  "value": "sum(id)"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

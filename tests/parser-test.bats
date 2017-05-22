@@ -17,7 +17,13 @@ setup() {
   [ "$result" = "$expected_result" ]
 }
 
-@test "test scanner return status with syntax error" {
+@test "test parser with sigma.go has expected results" {
+  result="$(bin/parser < tests/samples/sigma.go | sed 's/0x[0-9a-f]*/id/g')"
+  expected_result="$(cat tests/samples/parser_output_samples/sigma.txt)"
+  [ "$result" = "$expected_result" ]
+}
+
+@test "test parser return status with syntax error" {
   run bin/parser < tests/samples/syntax_error.go
   [ "$status" -eq 1 ]
 }

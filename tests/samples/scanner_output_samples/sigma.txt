@@ -14,8 +14,8 @@
 11:  // main function
 12:  func void main ( ) {
  -> <FUNC><VOID><id:main><(><)><{>
-13:    for (index = 0; index <= n; } {
- -> <FOR><(><id:index><=><integer:0><;><id:index><"<="><id:n><;><}><{>
+13:    for (index = 0; index <= n; ) {
+ -> <FOR><(><id:index><=><integer:0><;><id:index><"<="><id:n><;><)><{>
 14:      sum = sum + index
  -> <id:sum><=><id:sum><+><id:index>
 15:      index = index + 1
