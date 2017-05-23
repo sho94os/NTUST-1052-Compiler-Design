@@ -21,10 +21,10 @@ ast_node_t* new_ast_node(ast_node_type_t type, int line_num, int column_num) {
     return ast_node;
 }
 
-void ast_node_set_value_symbol(ast_node_t *ast_node, const symbol_table_entry_t *symbol_table_entry) {
+void ast_node_set_value_symbol(ast_node_t *ast_node, const symtab_entry_t *symtab_entry) {
     ast_node->has_value = true;
     ast_node->value_type = symbol;
-    ast_node->value.symbol = symbol_table_entry;
+    ast_node->value.symbol = symtab_entry;
 }
 
 void ast_node_set_value_operatr(ast_node_t *ast_node, int value) {
@@ -94,7 +94,7 @@ int dump_ast_node_to_str(ast_node_t *ast_node, char *str, int written, int level
                 written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": \"%s\"", level * 4 + 2, ' ', get_token_name(ast_node->value.operatr));
                 break;
             case symbol:
-                written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": \"%s(%p)\"", level * 4 + 2, ' ', ast_node->value.symbol->identifier, ast_node->value.symbol);
+                written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": \"%s(%p)\"", level * 4 + 2, ' ', ast_node->value.symbol->name, ast_node->value.symbol);
                 break;
             case integer:
                 written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": %d", level * 4 + 2, ' ', ast_node->value.integer);
@@ -148,7 +148,7 @@ int list_graphviz_node(ast_node_t *ast_node, char *str, int written, bool use_me
                 written += snprintf(str + written, AST_DUMP_SIZE - written, "\\n%s", get_html_token_name(ast_node->value.operatr));
                 break;
             case symbol:
-                written += snprintf(str + written, AST_DUMP_SIZE - written, "\\n%s(%p)", ast_node->value.symbol->identifier, ast_node->value.symbol);
+                written += snprintf(str + written, AST_DUMP_SIZE - written, "\\n%s(%p)", ast_node->value.symbol->name, ast_node->value.symbol);
                 break;
             case integer:
                 written += snprintf(str + written, AST_DUMP_SIZE - written, "\\n%d", ast_node->value.integer);

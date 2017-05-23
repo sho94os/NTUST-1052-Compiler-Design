@@ -3,10 +3,10 @@
 #include "lex.yy.c"
 
 int main(int argc, char **argv) {
-    init_symbol_table();
+    init_symtab();
     yylex();
 
-    print_symbol_table();
+    print_symtab();
 
     exit(0);
 }

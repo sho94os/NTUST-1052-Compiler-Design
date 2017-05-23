@@ -6,7 +6,7 @@
 #ifndef TOKENS_H
 #define TOKENS_H
 
-#include "symbol_table.h"
+#include "symtab.h"
 #include "ast.h"
 
 typedef int token_t;

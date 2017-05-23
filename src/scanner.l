@@ -1,6 +1,6 @@
 %{
 #include "tokens.h"
-#include "symbol_table.h"
+#include "symtab.h"
 
 #define LIST { column_num += strlen(yytext); strcat(buf, yytext); }
 
@@ -34,7 +34,7 @@
     #define tokenSymbol(t, s) {                                               \
         optbuf_w +=                                                           \
           snprintf(optbuf + optbuf_w, OPTBUF_SIZE - optbuf_w,                 \
-            "<%s:%s>", get_token_name(t), s->identifier);                     \
+            "<%s:%s>", get_token_name(t), s->name);                           \
         LIST;                                                                 \
     }
     #define tokenInteger(t, i) {                                              \
@@ -63,7 +63,7 @@ int line_num = 1;
 int column_num = 1;
 char buf[MAX_LINE_LENGTH];
 char strbuf[MAX_LINE_LENGTH];
-symbol_table_t *symbol_table;
+symtab_t *symtab;
 %}
 
 %s STRING LINE_COMMENT BLOCK_COMMENT
@@ -154,7 +154,7 @@ newline  \r?\n
  /** Identifier **/
 
 <INITIAL>{alpha}({alpha}|{digit}|_)* {
-    tokenSymbol(ID, symbol_table_insert(symbol_table, yytext));
+    tokenSymbol(ID, symtab_insert(symtab, yytext));
 }
 
  /** Interger Literal **/
@@ -242,11 +242,11 @@ newline  \r?\n
 
 %%
 
-void init_symbol_table() {
-    symbol_table = symbol_table_create();
+void init_symtab() {
+    symtab = symtab_create();
 }
 
-void print_symbol_table() {
+void print_symtab() {
     printf("\nSymbol Table:\n");
-    printf("%s", symbol_table_dump_str(symbol_table));
+    printf("%s", symtab_dump_str(symtab));
 }

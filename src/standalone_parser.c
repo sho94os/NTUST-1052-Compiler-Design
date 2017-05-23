@@ -3,7 +3,7 @@
 #include "y.tab.c"
 
 int main(int argc, char **argv) {
-    init_symbol_table();
+    init_symtab();
     yyparse();
 
     int format = 0;

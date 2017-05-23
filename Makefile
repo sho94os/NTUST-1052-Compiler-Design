@@ -1,4 +1,4 @@
-TESTS = tokens-check symbol_table-check ast-check scanner-test parser-test
+TESTS = tokens-check symtab-check ast-check scanner-test parser-test
 
 .SECONDARY:
 .PHONY: clean test
@@ -12,10 +12,10 @@ test: $(TESTS)
 clean:
 	rm -f */*.o bin/parser bin/scanner src/y.output src/y.tab.h src/y.tab.c src/lex.yy.c tests/*-check tests/*-check.c
 
-bin/parser: src/standalone_parser.o src/tokens.o src/symbol_table.o src/ast.o
+bin/parser: src/standalone_parser.o src/tokens.o src/symtab.o src/ast.o
 	gcc $(CFLAGS) -o $@ $^ -ll
 
-bin/scanner: src/standalone_scanner.o src/tokens.o src/symbol_table.o
+bin/scanner: src/standalone_scanner.o src/tokens.o src/symtab.o
 	gcc $(CFLAGS) -o $@ $^ -ll -lm
 
 src/standalone_parser.o: src/standalone_parser.c src/y.tab.c

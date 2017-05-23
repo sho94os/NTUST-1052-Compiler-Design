@@ -1,6 +1,6 @@
 %{
 #include "lex.yy.c"
-#include "symbol_table.h"
+#include "symtab.h"
 #include "ast.h"
 
 #ifdef STANDALONE_PARSER
@@ -9,7 +9,7 @@
 
 /** Shorthands For Commonly Used Code **/
 ast_node_t* n(ast_node_type_t t, YYLTYPE l) { return new_ast_node(t, l.first_line, l.first_column); }
-void vsym(ast_node_t *n, symbol_table_entry_t *v) { ast_node_set_value_symbol(n, v); }
+void vsym(ast_node_t *n, symtab_entry_t *v) { ast_node_set_value_symbol(n, v); }
 void vopt(ast_node_t *n, int v) { ast_node_set_value_operatr(n, v); }
 void vint(ast_node_t *n, int v) { ast_node_set_value_integer(n, v); }
 void vstr(ast_node_t *n, char *v) { ast_node_set_value_string(n, v); }
@@ -32,7 +32,7 @@ bool has_error = false;
 /** Type Definition **/
 
 %union {
-    symbol_table_entry_t* symbol;
+    symtab_entry_t* symbol;
     int                   integer;
     char*                 string;
     ast_node_t*           ast_node;
