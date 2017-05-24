@@ -128,10 +128,14 @@ int dump_ast_node_to_str(ast_node_t *ast_node, char *str, int written, int level
 }
 
 char* ast_dump_str(ast_node_t* ast) {
+    return ast_dump_str_with_options(ast, 0);
+}
+
+char* ast_dump_str_with_options(ast_node_t* ast, int initial_level) {
     char *dump_str = (char*) malloc(AST_DUMP_SIZE);
     dump_str[0] = 0;
 
-    dump_ast_node_to_str(ast, dump_str, 0, 0);
+    dump_ast_node_to_str(ast, dump_str, 0, initial_level);
 
     return dump_str;
 }

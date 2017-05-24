@@ -1,0 +1,113 @@
+#include "../src/idtab.h"
+
+#suite Symbol (Identifier) Table
+
+#tcase Creation of tables
+
+#test test_idtab_create
+    idtab_t *t = idtab_create();
+    ck_assert(!t->upper_idtab);
+
+#test test_idtab_entry_idtab_create
+    idtab_t *t = idtab_create();
+    idtab_entry_t *id = idtab_insert(t, variable_identifier_type, "hello", int_value_type);
+    idtab_t *st = idtab_entry_idtab_create(t, id);
+    ck_assert_int_eq((int)st->upper_idtab, (int)t);
+    ck_assert_int_eq((int)st->scope, (int)id);
+    ck_assert_int_eq((int)id->scoped_idtab, (int)st);
+
+#tcase Insertion and lookup of tables
+
+#test test_idtab_insert
+    idtab_t *t = idtab_create();
+    idtab_entry_t *foo = idtab_insert(t, variable_identifier_type, "foo", int_value_type);
+    idtab_entry_t *bar = idtab_insert(t, constant_identifier_type, "bar", bool_value_type);
+    idtab_t *bar_table = idtab_entry_idtab_create(t, bar);
+    idtab_entry_t *bar_bar = idtab_insert(bar_table, constant_identifier_type, "bar", bool_value_type);
+
+    ck_assert_int_eq(foo->idtab, t);
+    ck_assert_int_eq(foo->type, variable_identifier_type);
+    ck_assert_str_eq(foo->identifier, "foo");
+    ck_assert_int_eq(foo->value_type, int_value_type);
+
+    ck_assert_int_eq(bar->idtab, t);
+    ck_assert_int_eq(bar->type, constant_identifier_type);
+    ck_assert_str_eq(bar->identifier, "bar");
+    ck_assert_int_eq(bar->value_type, bool_value_type);
+
+    ck_assert_int_ne((int)bar_bar, (int)bar);
+    ck_assert_int_eq(bar_bar->idtab, bar_table);
+    ck_assert_int_eq(bar->type, constant_identifier_type);
+    ck_assert_str_eq(bar->identifier, "bar");
+    ck_assert_int_eq(bar->value_type, bool_value_type);
+
+#test test_idtab_lookup
+    idtab_t *t = idtab_create();
+    idtab_entry_t *foo = idtab_insert(t, variable_identifier_type, "foo", int_value_type);
+    idtab_entry_t *bar = idtab_insert(t, constant_identifier_type, "bar", bool_value_type);
+    idtab_t *st = idtab_entry_idtab_create(t, bar);
+    idtab_entry_t *baz = idtab_insert(st, constant_identifier_type, "baz", bool_value_type);
+    ck_assert_int_eq((int)foo, (int)idtab_lookup(t, "foo"));
+    ck_assert_int_eq((int)bar, (int)idtab_lookup(t, "bar"));
+    ck_assert(!idtab_lookup(t, "baz"));
+    ck_assert_int_eq((int)foo, (int)idtab_lookup(st, "foo"));
+    ck_assert_int_eq((int)bar, (int)idtab_lookup(st, "bar"));
+    ck_assert_int_eq((int)baz, (int)idtab_lookup(st, "baz"));
+
+#test test_idtab_mass_insert_lookup_same
+    idtab_t *t = idtab_create();
+    idtab_entry_t *id_01 = idtab_insert(t, variable_identifier_type, "id_01", int_value_type);
+    idtab_entry_t *id_02 = idtab_insert(t, variable_identifier_type, "id_02", int_value_type);
+    idtab_entry_t *id_03 = idtab_insert(t, variable_identifier_type, "id_03", int_value_type);
+    idtab_entry_t *id_04 = idtab_insert(t, variable_identifier_type, "id_04", int_value_type);
+    idtab_entry_t *id_05 = idtab_insert(t, variable_identifier_type, "id_05", int_value_type);
+    idtab_entry_t *id_06 = idtab_insert(t, variable_identifier_type, "id_06", int_value_type);
+    idtab_entry_t *id_07 = idtab_insert(t, variable_identifier_type, "id_07", int_value_type);
+    idtab_entry_t *id_08 = idtab_insert(t, variable_identifier_type, "id_08", int_value_type);
+    idtab_entry_t *id_09 = idtab_insert(t, variable_identifier_type, "id_09", int_value_type);
+    idtab_entry_t *id_10 = idtab_insert(t, variable_identifier_type, "id_10", int_value_type);
+    idtab_entry_t *id_11 = idtab_insert(t, variable_identifier_type, "id_11", int_value_type);
+    idtab_entry_t *id_12 = idtab_insert(t, variable_identifier_type, "id_12", int_value_type);
+    idtab_entry_t *id_13 = idtab_insert(t, variable_identifier_type, "id_13", int_value_type);
+    idtab_entry_t *id_14 = idtab_insert(t, variable_identifier_type, "id_14", int_value_type);
+    idtab_entry_t *id_15 = idtab_insert(t, variable_identifier_type, "id_15", int_value_type);
+    idtab_entry_t *id_16 = idtab_insert(t, variable_identifier_type, "id_16", int_value_type);
+    ck_assert_int_eq((int)id_01, (int)idtab_lookup(t, "id_01"));
+    ck_assert_int_eq((int)id_02, (int)idtab_lookup(t, "id_02"));
+    ck_assert_int_eq((int)id_03, (int)idtab_lookup(t, "id_03"));
+    ck_assert_int_eq((int)id_04, (int)idtab_lookup(t, "id_04"));
+    ck_assert_int_eq((int)id_05, (int)idtab_lookup(t, "id_05"));
+    ck_assert_int_eq((int)id_06, (int)idtab_lookup(t, "id_06"));
+    ck_assert_int_eq((int)id_07, (int)idtab_lookup(t, "id_07"));
+    ck_assert_int_eq((int)id_08, (int)idtab_lookup(t, "id_08"));
+    ck_assert_int_eq((int)id_09, (int)idtab_lookup(t, "id_09"));
+    ck_assert_int_eq((int)id_10, (int)idtab_lookup(t, "id_10"));
+    ck_assert_int_eq((int)id_11, (int)idtab_lookup(t, "id_11"));
+    ck_assert_int_eq((int)id_12, (int)idtab_lookup(t, "id_12"));
+    ck_assert_int_eq((int)id_13, (int)idtab_lookup(t, "id_13"));
+    ck_assert_int_eq((int)id_14, (int)idtab_lookup(t, "id_14"));
+    ck_assert_int_eq((int)id_15, (int)idtab_lookup(t, "id_15"));
+    ck_assert_int_eq((int)id_16, (int)idtab_lookup(t, "id_16"));
+
+#test test_idtab_insert_unique
+    idtab_t *t = idtab_create();
+    idtab_entry_t *index_foo = idtab_insert(t, variable_identifier_type, "foo", int_value_type);
+    idtab_entry_t *index_bar = idtab_insert(t, variable_identifier_type, "bar", int_value_type);
+    idtab_entry_t *index_baz = idtab_insert(t, variable_identifier_type, "baz", int_value_type);
+    ck_assert_int_ne((int)index_foo, (int)index_bar);
+    ck_assert_int_ne((int)index_bar, (int)index_baz);
+
+#test test_idtab_insert_lookup_unknown
+    idtab_t *t = idtab_create();
+    ck_assert(!idtab_lookup(t, "unknown_id"));
+
+#test test_idtab_dump_str
+    idtab_t *idtab = idtab_create();
+    idtab_entry_t *foo = idtab_insert(idtab, variable_identifier_type, "foo", int_value_type);
+    idtab_entry_t *bar = idtab_insert(idtab, function_identifier_type, "bar", bool_value_type);
+    idtab_t *bar_idtab = idtab_entry_idtab_create(idtab, bar);
+    idtab_entry_t *baz = idtab_insert(bar_idtab, variable_identifier_type, "baz", int_value_type);
+
+    char *dump = idtab_dump_str(idtab);
+    char *expected_dump = "{\n  \"foo\": {\n    \"type\": \"variable\",\n    \"value_type\": \"int\"\n  },\n  \"bar\": {\n    \"type\": \"function\",\n    \"value_type\": \"bool\",\n    \"scoped_identifiers\": {\n      \"baz\": {\n        \"type\": \"variable\",\n        \"value_type\": \"int\"\n      }\n    }\n  }\n}\n";
+    ck_assert_str_eq(dump, expected_dump);

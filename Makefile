@@ -1,4 +1,4 @@
-TESTS = tokens-check symtab-check ast-check scanner-test parser-test
+TESTS = tokens-check symtab-check ast-check idtab-check scanner-test parser-test
 
 .SECONDARY:
 .PHONY: clean test

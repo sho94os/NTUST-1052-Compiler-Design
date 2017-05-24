@@ -92,6 +92,7 @@ const char* get_ast_node_type_name(ast_node_type_t);
 
 /* Dump all children under a AST node. */
 char* ast_dump_str(ast_node_t*);
+char* ast_dump_str_with_options(ast_node_t*, int initial_level);
 char* ast_dump_graphviz(ast_node_t*);
 char* ast_dump_graphviz_with_options(ast_node_t*, bool use_mem_key);
 
