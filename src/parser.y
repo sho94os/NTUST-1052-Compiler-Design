@@ -2,23 +2,27 @@
 #include "lex.yy.c"
 #include "symtab.h"
 #include "ast.h"
+#include "idtab.h"
 
 #ifdef STANDALONE_PARSER
 #else
 #endif
 
+/** Globals **/
+ast_node_t *ast_root;
+idtab_t *idtab, *current_idtab;
+bool has_error = false;
+
 /** Shorthands For Commonly Used Code **/
 ast_node_t* n(ast_node_type_t t, YYLTYPE l) { return new_ast_node(t, l.first_line, l.first_column); }
-void vsym(ast_node_t *n, symtab_entry_t *v) { ast_node_set_value_symbol(n, v); }
+void vid(ast_node_t *n, idtab_entry_t *v) { if (v) ast_node_set_value_identifier(n, v); }
 void vopt(ast_node_t *n, int v) { ast_node_set_value_operatr(n, v); }
 void vint(ast_node_t *n, int v) { ast_node_set_value_integer(n, v); }
 void vstr(ast_node_t *n, char *v) { ast_node_set_value_string(n, v); }
 void ich(ast_node_t *n, ast_node_t *child) { ast_node_insert_child(n, child); }
 void isb(ast_node_t *n, ast_node_t *sibling) { ast_node_insert_sibling(n, sibling); }
-
-/** Globals **/
-ast_node_t* ast_root;
-bool has_error = false;
+void esp(idtab_entry_t *sid) { current_idtab = idtab_entry_idtab_create(current_idtab, sid); }
+void lsp() { if (current_idtab->upper_idtab) current_idtab = current_idtab->upper_idtab; }
 %}
 
 /** Extensions **/
@@ -32,10 +36,12 @@ bool has_error = false;
 /** Type Definition **/
 
 %union {
-    symtab_entry_t* symbol;
-    int                   integer;
-    char*                 string;
-    ast_node_t*           ast_node;
+    symtab_entry_t*          symbol;
+    idtab_entry_t*           identifier;
+    idtab_entry_value_type_t identifier_value_type;
+    int                      integer;
+    char*                    string;
+    ast_node_t*              ast_node;
 }
 
 /** Identifier **/
@@ -117,10 +123,13 @@ bool has_error = false;
 
 /** Type Declarations **/
 
-%type <symbol> id
+%type <symbol> id_symbol
+%type <identifier> identifier
+%type <identifier_value_type> type
+%type <identifier_value_type> type_including_void
 
 %type <ast_node> program
-%type <ast_node> id_eval
+%type <ast_node> id_node
 %type <ast_node> func_def
 %type <ast_node> func_args
 %type <ast_node> func_arg_list
@@ -164,43 +173,47 @@ program : program var_dec { ich($$, $2); }
 
 /** Identifier **/
 
-id : ID ;
-
-id_eval : ID { $$ = n(ast_id, @$); vsym($$, $1); } ;
+id_symbol : ID;
+identifier : id_symbol { $$ = idtab_lookup(current_idtab, $1->name); } ;
+id_node : identifier { $$ = n(ast_id, @$); vid($$, $1); } ;
 
 /** Types **/
 
-type : KW_BOOL
-     | KW_INT
-     | KW_REAL
-     | KW_STRING
+type : KW_BOOL { $$ = bool_value_type; }
+     | KW_INT { $$ = int_value_type; }
+     | KW_REAL { $$ = real_value_type; }
+     | KW_STRING { $$ = string_value_type; }
      ;
 
 type_including_void : type
-                    | KW_VOID
+                    | KW_VOID { $$ = void_value_type; }
                     ;
-
-type_optional : type_including_void
-              |
-              ;
 
 /** Functions **/
 
 func_def :
-    KW_FUNC type_including_void ID LEFT_PARENTHESIS func_args RIGHT_PARENTHESIS LEFT_BRACKET func_body RIGHT_BRACKET {
+    KW_FUNC type_including_void id_symbol {
+        idtab_entry_t *id = idtab_insert(current_idtab, function_identifier_type, $3->name, $2);
+        $<identifier>$ = id;
+        esp(id);
+    } LEFT_PARENTHESIS func_args RIGHT_PARENTHESIS LEFT_BRACKET func_body RIGHT_BRACKET {
         $$ = n(ast_func_def, @$);
-        vsym($$, $3);
-        ich($$, $5);
-        ich($$, $8);
-        // TODO: Deal with the type
+        vid($$, $<identifier>4);
+        ich($$, $6);
+        ich($$, $9);
+        lsp();
     }
 |
-    KW_FUNC ID LEFT_PARENTHESIS func_args RIGHT_PARENTHESIS LEFT_BRACKET func_body RIGHT_BRACKET {
+    KW_FUNC id_symbol {
+        idtab_entry_t *id = idtab_insert(current_idtab, function_identifier_type, $2->name, void_value_type);
+        $<identifier>$ = id;
+        esp(id);
+    } LEFT_PARENTHESIS func_args RIGHT_PARENTHESIS LEFT_BRACKET func_body RIGHT_BRACKET {
         $$ = n(ast_func_def, @$);
-        vsym($$, $2);
-        ich($$, $4);
-        ich($$, $7);
-        // TODO: Set type to void
+        vid($$, $<identifier>3);
+        ich($$, $5);
+        ich($$, $8);
+        lsp();
     }
 ;
 
@@ -212,10 +225,9 @@ func_arg_list : func_arg
               | func_arg_list COMMA func_arg { isb($$, $3); }
               ;
 
-func_arg : id type {
+func_arg : id_symbol type {
     $$ = n(ast_func_arg, @$);
-    vsym($$, $1);
-    // TODO: Deal with the type
+    vid($$, idtab_insert(current_idtab, variable_identifier_type, $1->name, $2));
 } ;
 
 func_body : func_body var_dec { ich($$, $2); }
@@ -226,9 +238,9 @@ func_body : func_body var_dec { ich($$, $2); }
 
 /** Constant Declarations **/
 
-const_dec : KW_CONST id OP_ASSIGNMENT expr {
+const_dec : KW_CONST id_symbol OP_ASSIGNMENT expr {
     $$ = n(ast_const_dec, @$);
-    vsym($$, $2);
+    vid($$, idtab_insert(current_idtab, variable_identifier_type, $2->name, unknown_value_type));
     ich($$, $4);
     // TODO: Deal with the type
 } ;
@@ -236,24 +248,21 @@ const_dec : KW_CONST id OP_ASSIGNMENT expr {
 /** Variable Declarations **/
 
 var_dec :
-    KW_VAR id type {
+    KW_VAR id_symbol type {
         $$ = n(ast_var_dec, @$);
-        vsym($$, $2);
-        // TODO: Deal with the type
+        vid($$, idtab_insert(current_idtab, variable_identifier_type, $2->name, $3));
     }
 |
-    KW_VAR id type OP_ASSIGNMENT expr {
+    KW_VAR id_symbol type OP_ASSIGNMENT expr {
         $$ = n(ast_var_dec, @$);
-        vsym($$, $2);
+        vid($$, idtab_insert(current_idtab, variable_identifier_type, $2->name, $3));
         ich($$, $5);
-        // TODO: Deal with the type
     }
 |
-    KW_VAR id LEFT_SQUARE_BRACKET expr RIGHT_SQUARE_BRACKET type {
+    KW_VAR id_symbol LEFT_SQUARE_BRACKET expr RIGHT_SQUARE_BRACKET type {
         $$ = n(ast_arr_dec, @$);
-        vsym($$, $2);
+        vid($$, idtab_insert(current_idtab, variable_identifier_type, $2->name, $6));
         ich($$, $4);
-        // TODO: Deal with the type
     }
 ;
 
@@ -275,26 +284,26 @@ stmt_optional : stmt
               ;
 
 assign_stmt :
-    id OP_ASSIGNMENT expr {
+    identifier OP_ASSIGNMENT expr {
         $$ = n(ast_assign, @$);
-        vsym($$, $1);
+        vid($$, $1);
         ich($$, $3);
     }
 ;
 
 array_assign_stmt :
-    id LEFT_SQUARE_BRACKET expr RIGHT_SQUARE_BRACKET OP_ASSIGNMENT expr {
+    identifier LEFT_SQUARE_BRACKET expr RIGHT_SQUARE_BRACKET OP_ASSIGNMENT expr {
         $$ = n(ast_arr_assign, @$);
-        vsym($$, $1);
+        vid($$, $1);
         ich($$, $3);
         ich($$, $6);
     }
 ;
 
 func_invo_stmt :
-    id LEFT_PARENTHESIS func_invo_args RIGHT_PARENTHESIS {
+    identifier LEFT_PARENTHESIS func_invo_args RIGHT_PARENTHESIS {
         $$ = n(ast_func_invo, @$);
-        vsym($$, $1);
+        vid($$, $1);
         ich($$, $3);
     }
 ;
@@ -314,7 +323,7 @@ print_stmt : KW_PRINT expr { $$ = n(ast_print, @$); ich($$, $2); } ;
 
 println_stmt : KW_PRINTLN expr { $$ = n(ast_println, @$); ich($$, $2); } ;
 
-read_stmt : KW_READ id { $$ = n(ast_read, @$); vsym($$, $2); } ;
+read_stmt : KW_READ identifier { $$ = n(ast_read, @$); vid($$, $2); } ;
 
 return_stmt : KW_RETURN { $$ = n(ast_return, @$); }
             | KW_RETURN expr { $$ = n(ast_return, @$); ich($$, $2); }
@@ -347,7 +356,7 @@ expr : LEFT_PARENTHESIS expr RIGHT_PARENTHESIS { $$ = $2; }
      | print_stmt
      | println_stmt
      | read_stmt
-     | id_eval
+     | id_node
      | literals
      ;
 
@@ -420,4 +429,9 @@ int yyerror(char *msg) {
     fprintf(stderr, "%s around line %d, cloumn %d\n", msg, yylloc.first_line, yylloc.first_column);
     has_error = true;
     return 0;
+}
+
+void init_idtab() {
+    idtab = idtab_create();
+    current_idtab = idtab;
 }

@@ -4,6 +4,7 @@
 
 int main(int argc, char **argv) {
     init_symtab();
+    init_idtab();
     yyparse();
 
     int format = 0;
@@ -15,7 +16,11 @@ int main(int argc, char **argv) {
 
     switch (format) {
         case 0:
-            printf("%s", ast_dump_str(ast_root));
+            printf("{\n  \"ast\": ");
+            printf("%s", ast_dump_str_with_options(ast_root, 1) + 2);
+            printf(",\n  \"ids\": ");
+            printf("%s", idtab_dump_str_with_options(idtab, true, 1));
+            printf("\n}\n");
             break;
         case 1:
             printf("%s", ast_dump_graphviz(ast_root));

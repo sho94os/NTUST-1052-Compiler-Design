@@ -6,7 +6,8 @@ int main(int argc, char **argv) {
     init_symtab();
     yylex();
 
-    print_symtab();
+    printf("\nSymbol Table:\n");
+    printf("%s", symtab_dump_str(symtab));
 
     exit(0);
 }

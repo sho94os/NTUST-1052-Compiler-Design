@@ -12,7 +12,7 @@
 #define BUF_SIZE 32
 
 /* Hash function for the hash table */
-int hash(char *string) {
+int idtab_hash(char *string) {
     unsigned long int hash_value = 0;
 
     int string_length = strlen(string);
@@ -26,8 +26,8 @@ int hash(char *string) {
     return hash_value;
 }
 
-idtab_entry_t* get_leave_entry(idtab_entry_t *entry) {
-    if (entry->next) return get_leave_entry(entry->next);
+idtab_entry_t* idtab_get_leave_entry(idtab_entry_t *entry) {
+    if (entry->next) return idtab_get_leave_entry(entry->next);
     return entry;
 }
 
@@ -65,12 +65,12 @@ idtab_entry_t* idtab_insert(idtab_t* idtab, idtab_entry_type_t type, char* ident
     entry->value_type = value_type;
     strcpy(entry->identifier, identifier);
 
-    int hash_value = hash(identifier);
+    int hash_value = idtab_hash(identifier);
 
     if (!idtab->entries[hash_value]) {
         idtab->entries[hash_value] = entry;
     } else {
-        idtab_entry_t *leave_entry = get_leave_entry(idtab->entries[hash_value]);
+        idtab_entry_t *leave_entry = idtab_get_leave_entry(idtab->entries[hash_value]);
         leave_entry->next = entry;
     }
 
@@ -78,7 +78,7 @@ idtab_entry_t* idtab_insert(idtab_t* idtab, idtab_entry_type_t type, char* ident
 }
 
 idtab_entry_t* idtab_lookup(idtab_t* idtab, char* identifier) {
-    int hash_value = hash(identifier);
+    int hash_value = idtab_hash(identifier);
 
     if (!idtab->entries[hash_value]) {
         if (idtab->upper_idtab) return idtab_lookup(idtab->upper_idtab, identifier);
@@ -100,88 +100,106 @@ idtab_entry_t* idtab_lookup(idtab_t* idtab, char* identifier) {
 
 #define IDTAB_DUMP_SIZE 100000
 
+int add_entry_to_dump(idtab_entry_t *entry, char *str, int written, int level, bool dump_mem_loc);
 
-int add_entry_to_dump(idtab_entry_t *entry, char *str, int written, int level) {
-    if (str[written - 1] == '}') {
-        written += snprintf(str + written, IDTAB_DUMP_SIZE - written, ",\n");
-    }
-
-    written += snprintf(str + written, IDTAB_DUMP_SIZE - written, "%*c\"%s\": {", level * 4 + 2, ' ', entry->identifier);
-
-    switch (entry->type) {
-        case function_identifier_type:
-            written += snprintf(str + written, IDTAB_DUMP_SIZE - written, "\n%*c\"type\": \"%s\"", level * 4 + 4, ' ', "function");
-            break;
-        case variable_identifier_type:
-            written += snprintf(str + written, IDTAB_DUMP_SIZE - written, "\n%*c\"type\": \"%s\"", level * 4 + 4, ' ', "variable");
-            break;
-        case constant_identifier_type:
-            written += snprintf(str + written, IDTAB_DUMP_SIZE - written, "\n%*c\"type\": \"%s\"", level * 4 + 4, ' ', "constant");
-            break;
-    }
-
-    switch (entry->value_type) {
-        case bool_value_type:
-            written += snprintf(str + written, IDTAB_DUMP_SIZE - written, ",\n%*c\"value_type\": \"%s\"", level * 4 + 4, ' ', "bool");
-            break;
-        case int_value_type:
-            written += snprintf(str + written, IDTAB_DUMP_SIZE - written, ",\n%*c\"value_type\": \"%s\"", level * 4 + 4, ' ', "int");
-            break;
-        case real_value_type:
-            written += snprintf(str + written, IDTAB_DUMP_SIZE - written, ",\n%*c\"value_type\": \"%s\"", level * 4 + 4, ' ', "real");
-            break;
-        case string_value_type:
-            written += snprintf(str + written, IDTAB_DUMP_SIZE - written, ",\n%*c\"value_type\": \"%s\"", level * 4 + 4, ' ', "string");
-            break;
-    }
-
-    if (entry->scoped_idtab) {
-        written += snprintf(str + written, IDTAB_DUMP_SIZE - written, ",\n%*c\"scoped_identifiers\": ", level * 4 + 4, ' ');
-        written = dump_idtab_to_str(entry->scoped_idtab, str, written, level + 1);
-    }
-
-    written += snprintf(str + written, IDTAB_DUMP_SIZE - written, "\n%*c}", level * 4 + 2, ' ');
-
-    return written;
-}
-
-int add_entry_chain_to_dump(idtab_entry_t *entry, char *str, int written, int level) {
-    written = add_entry_to_dump(entry, str, written, level);
+int add_entry_chain_to_dump(idtab_entry_t *entry, char *str, int written, int level, bool dump_mem_loc) {
+    written = add_entry_to_dump(entry, str, written, level, dump_mem_loc);
     if (entry->next) {
-        return add_entry_chain_to_dump(entry->next, str, written, level);
+        return add_entry_chain_to_dump(entry->next, str, written, level, dump_mem_loc);
     } else {
         return written;
     }
 }
 
-int dump_idtab_to_str(idtab_t *idtab, char *str, int written, int level) {
+int dump_idtab_to_str(idtab_t *idtab, char *str, int written, int level, bool dump_mem_loc) {
     written += snprintf(str + written, IDTAB_DUMP_SIZE - written, "{\n");
 
     for (int i = 0; i < IDTAB_HASHTAB_SIZE; ++i) {
         idtab_entry_t *entry = idtab->entries[i];
 
         if (!entry) continue;
-        written = add_entry_chain_to_dump(entry, str, written, level);
+        written = add_entry_chain_to_dump(entry, str, written, level, dump_mem_loc);
+    }
+
+    if (str[written - 1] == '\n' && str[written - 2] == '{') {
+        str[written - 1] = 0;
+        --written;
+        written += snprintf(str + written, IDTAB_DUMP_SIZE - written, "}");
+        return written;
     }
 
     if (level == 0) {
         written += snprintf(str + written, IDTAB_DUMP_SIZE - written, "\n}\n");
     } else {
-        written += snprintf(str + written, IDTAB_DUMP_SIZE - written, "\n%*c}", level * 4, ' ');
+        written += snprintf(str + written, IDTAB_DUMP_SIZE - written, "\n%*c}", level * 2, ' ');
     }
 
     return written;
 }
 
-char* idtab_dump_str(idtab_t* idtab) {
-    return idtab_dump_str_with_options(idtab, 0);
+int add_entry_to_dump(idtab_entry_t *entry, char *str, int written, int level, bool dump_mem_loc) {
+    if (str[written - 1] == '}') {
+        written += snprintf(str + written, IDTAB_DUMP_SIZE - written, ",\n");
+    }
+
+    if (dump_mem_loc) {
+        written += snprintf(str + written, IDTAB_DUMP_SIZE - written, "%*c\"%s(%p)\": {", level * 2 + 2, ' ', entry->identifier, entry);
+    } else {
+        written += snprintf(str + written, IDTAB_DUMP_SIZE - written, "%*c\"%s\": {", level * 2 + 2, ' ', entry->identifier);
+    }
+
+    switch (entry->type) {
+        case function_identifier_type:
+            written += snprintf(str + written, IDTAB_DUMP_SIZE - written, "\n%*c\"type\": \"%s\"", level * 2 + 4, ' ', "function");
+            break;
+        case variable_identifier_type:
+            written += snprintf(str + written, IDTAB_DUMP_SIZE - written, "\n%*c\"type\": \"%s\"", level * 2 + 4, ' ', "variable");
+            break;
+        case constant_identifier_type:
+            written += snprintf(str + written, IDTAB_DUMP_SIZE - written, "\n%*c\"type\": \"%s\"", level * 2 + 4, ' ', "constant");
+            break;
+    }
+
+    switch (entry->value_type) {
+        case void_value_type:
+            written += snprintf(str + written, IDTAB_DUMP_SIZE - written, ",\n%*c\"value_type\": \"%s\"", level * 2 + 4, ' ', "void");
+            break;
+        case bool_value_type:
+            written += snprintf(str + written, IDTAB_DUMP_SIZE - written, ",\n%*c\"value_type\": \"%s\"", level * 2 + 4, ' ', "bool");
+            break;
+        case int_value_type:
+            written += snprintf(str + written, IDTAB_DUMP_SIZE - written, ",\n%*c\"value_type\": \"%s\"", level * 2 + 4, ' ', "int");
+            break;
+        case real_value_type:
+            written += snprintf(str + written, IDTAB_DUMP_SIZE - written, ",\n%*c\"value_type\": \"%s\"", level * 2 + 4, ' ', "real");
+            break;
+        case string_value_type:
+            written += snprintf(str + written, IDTAB_DUMP_SIZE - written, ",\n%*c\"value_type\": \"%s\"", level * 2 + 4, ' ', "string");
+            break;
+        case unknown_value_type:
+            written += snprintf(str + written, IDTAB_DUMP_SIZE - written, ",\n%*c\"value_type\": \"%s\"", level * 2 + 4, ' ', "unknown");
+            break;
+    }
+
+    if (entry->scoped_idtab) {
+        written += snprintf(str + written, IDTAB_DUMP_SIZE - written, ",\n%*c\"scoped_identifiers\": ", level * 2 + 4, ' ');
+        written = dump_idtab_to_str(entry->scoped_idtab, str, written, level + 2, dump_mem_loc);
+    }
+
+    written += snprintf(str + written, IDTAB_DUMP_SIZE - written, "\n%*c}", level * 2 + 2, ' ');
+
+    return written;
 }
 
-char* idtab_dump_str_with_options(idtab_t* idtab, int initial_level) {
+char* idtab_dump_str(idtab_t* idtab) {
+    return idtab_dump_str_with_options(idtab, false, 0);
+}
+
+char* idtab_dump_str_with_options(idtab_t* idtab, bool dump_mem_loc, int initial_level) {
     char *dump_str = (char*) malloc(IDTAB_DUMP_SIZE);
     dump_str[0] = 0;
 
-    dump_idtab_to_str(idtab, dump_str, 0, initial_level);
+    dump_idtab_to_str(idtab, dump_str, 0, initial_level, dump_mem_loc);
 
     return dump_str;
 }

@@ -21,10 +21,10 @@ ast_node_t* new_ast_node(ast_node_type_t type, int line_num, int column_num) {
     return ast_node;
 }
 
-void ast_node_set_value_symbol(ast_node_t *ast_node, const symtab_entry_t *symtab_entry) {
+void ast_node_set_value_identifier(ast_node_t *ast_node, const idtab_entry_t *idtab_entry) {
     ast_node->has_value = true;
-    ast_node->value_type = symbol;
-    ast_node->value.symbol = symtab_entry;
+    ast_node->value_type = identifier;
+    ast_node->value.identifier = idtab_entry;
 }
 
 void ast_node_set_value_operatr(ast_node_t *ast_node, int value) {
@@ -83,45 +83,45 @@ int dump_ast_node_to_str(ast_node_t *ast_node, char *str, int written, int level
     if (level == 0) {
         written += snprintf(str + written, AST_DUMP_SIZE - written, "{\n");
     } else {
-        written += snprintf(str + written, AST_DUMP_SIZE - written, "%*c{\n", level * 4, ' ');
+        written += snprintf(str + written, AST_DUMP_SIZE - written, "%*c{\n", level * 2, ' ');
     }
 
-    written += snprintf(str + written, AST_DUMP_SIZE - written, "%*c\"type\": \"%s\"", level * 4 + 2, ' ', get_ast_node_type_name(ast_node->type));
+    written += snprintf(str + written, AST_DUMP_SIZE - written, "%*c\"type\": \"%s\"", level * 2 + 2, ' ', get_ast_node_type_name(ast_node->type));
 
     if (ast_node->has_value) {
         switch (ast_node->value_type) {
             case operatr:
-                written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": \"%s\"", level * 4 + 2, ' ', get_token_name(ast_node->value.operatr));
+                written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": \"%s\"", level * 2 + 2, ' ', get_token_name(ast_node->value.operatr));
                 break;
-            case symbol:
-                written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": \"%s(%p)\"", level * 4 + 2, ' ', ast_node->value.symbol->name, ast_node->value.symbol);
+            case identifier:
+                written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": \"%s(%p)\"", level * 2 + 2, ' ', ast_node->value.identifier->identifier, ast_node->value.identifier);
                 break;
             case integer:
-                written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": %d", level * 4 + 2, ' ', ast_node->value.integer);
+                written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": %d", level * 2 + 2, ' ', ast_node->value.integer);
                 break;
             case string:
-                written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": \"%s\"", level * 4 + 2, ' ', ast_node->value.string);
+                written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": \"%s\"", level * 2 + 2, ' ', ast_node->value.string);
                 break;
         }
     }
 
     if (ast_node->child) {
-        written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"children\": [\n", level * 4 + 2, ' ');
+        written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"children\": [\n", level * 2 + 2, ' ');
         ast_node_t *current_child = ast_node->child;
 
         while (current_child) {
             if (current_child != ast_node->child) written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n");
-            written = dump_ast_node_to_str(current_child, str, written, level + 1);
+            written = dump_ast_node_to_str(current_child, str, written, level + 2);
             current_child = current_child->sibling;
         }
 
-        written += snprintf(str + written, AST_DUMP_SIZE - written, "\n%*c]", level * 4 + 2, ' ');
+        written += snprintf(str + written, AST_DUMP_SIZE - written, "\n%*c]", level * 2 + 2, ' ');
     }
 
     if (level == 0) {
         written += snprintf(str + written, AST_DUMP_SIZE - written, "\n}\n");
     } else {
-        written += snprintf(str + written, AST_DUMP_SIZE - written, "\n%*c}", level * 4, ' ');
+        written += snprintf(str + written, AST_DUMP_SIZE - written, "\n%*c}", level * 2, ' ');
     }
 
     return written;
@@ -151,8 +151,8 @@ int list_graphviz_node(ast_node_t *ast_node, char *str, int written, bool use_me
             case operatr:
                 written += snprintf(str + written, AST_DUMP_SIZE - written, "\\n%s", get_html_token_name(ast_node->value.operatr));
                 break;
-            case symbol:
-                written += snprintf(str + written, AST_DUMP_SIZE - written, "\\n%s(%p)", ast_node->value.symbol->name, ast_node->value.symbol);
+            case identifier:
+                written += snprintf(str + written, AST_DUMP_SIZE - written, "\\n%s(%p)", ast_node->value.identifier->identifier, ast_node->value.identifier);
                 break;
             case integer:
                 written += snprintf(str + written, AST_DUMP_SIZE - written, "\\n%d", ast_node->value.integer);

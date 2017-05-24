@@ -6,6 +6,8 @@
 #ifndef IDTAB_H
 #define IDTAB_H
 
+#include <stdbool.h>
+
 #define IDTAB_MAX_IDENTIFIER_LENGTH 256
 #define IDTAB_HASHTAB_SIZE 32
 
@@ -18,10 +20,12 @@ typedef enum idtab_entry_identifier_type_e {
 
 /* Constant, variable or function return type. */
 typedef enum idtab_entry_value_type_e {
+    void_value_type,
     bool_value_type,
     int_value_type,
     real_value_type,
-    string_value_type
+    string_value_type,
+    unknown_value_type
 } idtab_entry_value_type_t;
 
 /* Entry of the symbol table, which notes the info of a identifier.
@@ -64,6 +68,6 @@ idtab_entry_t* idtab_lookup(idtab_t*, char* identifier);
 
 /* Dump an idtab for debugging */
 char* idtab_dump_str(idtab_t*);
-char* idtab_dump_str_with_options(idtab_t*, int initial_level);
+char* idtab_dump_str_with_options(idtab_t*, bool dump_mem_loc, int initial_level);
 
 #endif

@@ -8,7 +8,7 @@
 
 #include <stdbool.h>
 
-#include "symtab.h"
+#include "idtab.h"
 
 /* Define node types of the abstract syntax tree. */
 #define AST_NODE_TYPES(AST_NODE_TYPE)              \
@@ -46,13 +46,13 @@ typedef enum ast_node_type_e {
 
 /* Possible value types for nodes of the abstract syntax tree. */
 typedef enum ast_node_value_type_e {
-    symbol,   /* for ids */
-    operatr,  /* for operations */
-    integer,  /* for interger literals */
-    string    /* for real or string literals */
+    identifier,  /* for ids */
+    operatr,     /* for operations */
+    integer,     /* for interger literals */
+    string       /* for real or string literals */
 } ast_node_value_type_t;
 typedef union ast_node_value_u {
-    const symtab_entry_t  *symbol;
+    const idtab_entry_t         *identifier;
     int                         operatr;
     int                         integer;
     const char                  *string;
@@ -78,7 +78,7 @@ typedef struct ast_node_s {
 ast_node_t* new_ast_node(ast_node_type_t type, int line_num, int column_num);
 
 /* Set the value for a AST node. */
-void ast_node_set_value_symbol(ast_node_t*, const symtab_entry_t*);
+void ast_node_set_value_identifier(ast_node_t*, const idtab_entry_t*);
 void ast_node_set_value_operatr(ast_node_t*, int);
 void ast_node_set_value_integer(ast_node_t*, int);
 void ast_node_set_value_string(ast_node_t*, const char*);

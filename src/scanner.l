@@ -245,8 +245,3 @@ newline  \r?\n
 void init_symtab() {
     symtab = symtab_create();
 }
-
-void print_symtab() {
-    printf("\nSymbol Table:\n");
-    printf("%s", symtab_dump_str(symtab));
-}

@@ -1,28 +1,37 @@
 {
-  "type": "program",
-  "children": [
-    {
-      "type": "func_def",
-      "value": "main(id)",
-      "children": [
-        {
-          "type": "func_args"
-        },
-        {
-          "type": "func_body",
-          "children": [
-            {
-              "type": "println",
-              "children": [
-                {
-                  "type": "string",
-                  "value": "hello world"
-                }
-              ]
-            }
-          ]
-        }
-      ]
+  "ast": {
+    "type": "program",
+    "children": [
+      {
+        "type": "func_def",
+        "value": "main(id)",
+        "children": [
+          {
+            "type": "func_args"
+          },
+          {
+            "type": "func_body",
+            "children": [
+              {
+                "type": "println",
+                "children": [
+                  {
+                    "type": "string",
+                    "value": "hello world"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "ids": {
+    "main(id)": {
+      "type": "function",
+      "value_type": "void",
+      "scoped_identifiers": {}
     }
-  ]
+  }
 }
