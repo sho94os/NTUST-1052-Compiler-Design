@@ -40,8 +40,12 @@ typedef struct idtab_entry_s {
     idtab_entry_value_type_t value_type;
     /* The symbol table of identifiers that is scoped under this identifier */
     struct idtab_s *scoped_idtab;
+    /* Serial of this entry on the idtab */
+    unsigned int serial;
     /* Link to the next entry with the same hash value */
     struct idtab_entry_s *next;
+    /* Payload data used by codegen */
+    void *payload;
 } idtab_entry_t;
 
 /* A symbol table, implemented using hash table. */
@@ -52,6 +56,8 @@ typedef struct idtab_s {
     struct idtab_entry_s *scope;
     /* The symbol table of the upper scope */
     struct idtab_s *upper_idtab;
+    /* Count of entries in this symbol table */
+    unsigned int size;
 } idtab_t;
 
 /* Create a new, top-scope idtab. */

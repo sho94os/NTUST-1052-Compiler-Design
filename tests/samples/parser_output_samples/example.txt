@@ -7,7 +7,7 @@
         "value": "a(id)",
         "children": [
           {
-            "type": "integer",
+            "type": "integer_literal",
             "value": 5
           }
         ]
@@ -41,7 +41,7 @@
                 "children": [
                   {
                     "type": "operation",
-                    "value": "+",
+                    "value": "add",
                     "children": [
                       {
                         "type": "id",
@@ -85,7 +85,7 @@
                             "value": "a(id)"
                           },
                           {
-                            "type": "integer",
+                            "type": "integer_literal",
                             "value": 10
                           }
                         ]
@@ -99,14 +99,14 @@
                 "children": [
                   {
                     "type": "operation",
-                    "value": "">"",
+                    "value": "greater_than",
                     "children": [
                       {
                         "type": "id",
                         "value": "c(id)"
                       },
                       {
-                        "type": "integer",
+                        "type": "integer_literal",
                         "value": 10
                       }
                     ]
@@ -119,7 +119,7 @@
                         "children": [
                           {
                             "type": "operation",
-                            "value": "-",
+                            "value": "unary",
                             "children": [
                               {
                                 "type": "id",
@@ -151,7 +151,7 @@
                 "type": "println",
                 "children": [
                   {
-                    "type": "string",
+                    "type": "string_literal",
                     "value": "Hello World"
                   }
                 ]

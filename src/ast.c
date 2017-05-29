@@ -4,10 +4,11 @@
  */
 
 #include "ast.h"
-#include "tokens.h"
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include "tokens.h"
 
 ast_node_t* new_ast_node(ast_node_type_t type, int line_num, int column_num) {
     ast_node_t *ast_node = malloc(sizeof(ast_node_t));
@@ -40,9 +41,11 @@ void ast_node_set_value_integer(ast_node_t *ast_node, int value) {
 }
 
 void ast_node_set_value_string(ast_node_t *ast_node, const char* value) {
+    char *stored_value = malloc(strlen(value) + 1);
+    strcpy(stored_value, value);
     ast_node->has_value = true;
     ast_node->value_type = string;
-    ast_node->value.string = value;
+    ast_node->value.string = stored_value;
 }
 
 ast_node_t* find_last_sibling(ast_node_t *node) {
@@ -67,11 +70,30 @@ void ast_node_insert_sibling(ast_node_t *node, ast_node_t *sibling) {
     }
 }
 
+ast_node_t* ast_node_get_child(ast_node_t* ast_node, int n) {
+    ast_node_t* child = ast_node->child;
+
+    while (n > 1) {
+        child = child->sibling;
+        --n;
+    }
+
+    return child;
+}
+
 #define GENERATE_CASE_FOR_AST_NODE_TYPE_NAMES(type_name) case type_name: return #type_name + 4; break;
 
 const char* get_ast_node_type_name(ast_node_type_t type) {
     switch (type) {
         AST_NODE_TYPES(GENERATE_CASE_FOR_AST_NODE_TYPE_NAMES)
+    }
+}
+
+#define GENERATE_CASE_FOR_AST_NODE_OPERATR_VALUES(value) case value: return #value + 8; break;
+
+const char* get_ast_node_operatr_value_name(ast_operatr_value_t value) {
+    switch (value) {
+        AST_NODE_OPERATR_VALUES(GENERATE_CASE_FOR_AST_NODE_OPERATR_VALUES)
     }
 }
 
@@ -91,7 +113,7 @@ int dump_ast_node_to_str(ast_node_t *ast_node, char *str, int written, int level
     if (ast_node->has_value) {
         switch (ast_node->value_type) {
             case operatr:
-                written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": \"%s\"", level * 2 + 2, ' ', get_token_name(ast_node->value.operatr));
+                written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": \"%s\"", level * 2 + 2, ' ', get_ast_node_operatr_value_name(ast_node->value.operatr));
                 break;
             case identifier:
                 written += snprintf(str + written, AST_DUMP_SIZE - written, ",\n%*c\"value\": \"%s(%p)\"", level * 2 + 2, ' ', ast_node->value.identifier->identifier, ast_node->value.identifier);
@@ -149,7 +171,7 @@ int list_graphviz_node(ast_node_t *ast_node, char *str, int written, bool use_me
     if (ast_node->has_value) {
         switch (ast_node->value_type) {
             case operatr:
-                written += snprintf(str + written, AST_DUMP_SIZE - written, "\\n%s", get_html_token_name(ast_node->value.operatr));
+                written += snprintf(str + written, AST_DUMP_SIZE - written, "\\n%s", get_ast_node_operatr_value_name(ast_node->value.operatr));
                 break;
             case identifier:
                 written += snprintf(str + written, AST_DUMP_SIZE - written, "\\n%s(%p)", ast_node->value.identifier->identifier, ast_node->value.identifier);

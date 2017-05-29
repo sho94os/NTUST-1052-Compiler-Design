@@ -16,7 +16,7 @@
                 "type": "println",
                 "children": [
                   {
-                    "type": "string",
+                    "type": "string_literal",
                     "value": "hello world"
                   }
                 ]

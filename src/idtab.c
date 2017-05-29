@@ -44,6 +44,7 @@ idtab_t* idtab_create() {
     for (int i = 0; i < IDTAB_HASHTAB_SIZE; ++i) {
         idtab->entries[i] = NULL;
     }
+    idtab->size = 0;
     return idtab;
 }
 
@@ -64,6 +65,7 @@ idtab_entry_t* idtab_insert(idtab_t* idtab, idtab_entry_type_t type, char* ident
     entry->type = type;
     entry->value_type = value_type;
     strcpy(entry->identifier, identifier);
+    entry->serial = idtab->size++;
 
     int hash_value = idtab_hash(identifier);
 

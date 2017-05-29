@@ -1,8 +1,21 @@
 language: c
+os:
+  - linux
+  # - osx
+dist: trusty
 sudo: required
+addons:
+  apt:
+    sources:
+      - llvm-toolchain-precise-3.5
+    packages:
+      - check
+      - llvm-3.5
+      - llvm-3.5-dev
+      - libedit-dev
 before_install:
-  - "sudo apt-get update -qq"
-  - "sudo apt-get install -qq check"
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update      ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install llvm; fi
   - "mkdir -p dependences"
   - "cd dependences"
   - "[ ! -d checkmk-1.0.0pre4 ] && wget http://micah.cowan.name/projects/checkmk/checkmk-1.0.0pre4.tar.gz && tar xvzf checkmk-1.0.0pre4.tar.gz || :"
@@ -18,4 +31,5 @@ before_install:
 cache:
   directories:
     - dependences
+    - /usr/local/Cellar
 script: make test

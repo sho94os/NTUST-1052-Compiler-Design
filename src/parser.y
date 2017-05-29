@@ -332,24 +332,24 @@ return_stmt : KW_RETURN { $$ = n(ast_return, @$); }
 /** Expressions **/
 
 expr : LEFT_PARENTHESIS expr RIGHT_PARENTHESIS { $$ = $2; }
-     | OP_SUBTRACTION expr { $$ = n(ast_operation, @$); vopt($$, $1); ich($$, $2); }
-     | OP_NOT expr { $$ = n(ast_operation, @$); vopt($$, $1); ich($$, $2); }
-     | expr OP_EXPONENTIATION expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
-     | expr OP_MULTIPLICATION expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
-     | expr OP_DIVISION expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
-     | expr OP_REMAINDER expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
-     | expr OP_ADDITION expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
-     | expr OP_SUBTRACTION expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
-     | expr OP_EQUAL_TO expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
-     | expr OP_NOT_EQUAL_TO expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
-     | expr OP_GREATER_THAN expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
-     | expr OP_LESS_THAN expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
-     | expr OP_GREATER_THAN_OR_EQUAL_TO expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
-     | expr OP_LESS_THAN_OR_EQUAL_TO expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
-     | expr OP_BINARY_AND expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
-     | expr OP_BINARY_OR expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
-     | expr OP_LOGICAL_AND expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
-     | expr OP_LOGICAL_OR expr { $$ = n(ast_operation, @$); vopt($$, $2); ich($$, $1); ich($$, $3); }
+     | OP_SUBTRACTION expr { $$ = n(ast_operation, @$); vopt($$, operatr_unary); ich($$, $2); }
+     | OP_NOT expr { $$ = n(ast_operation, @$); vopt($$, operatr_not); ich($$, $2); }
+     | expr OP_EXPONENTIATION expr { $$ = n(ast_operation, @$); vopt($$, operatr_exponent); ich($$, $1); ich($$, $3); }
+     | expr OP_MULTIPLICATION expr { $$ = n(ast_operation, @$); vopt($$, operatr_multiply); ich($$, $1); ich($$, $3); }
+     | expr OP_DIVISION expr { $$ = n(ast_operation, @$); vopt($$, operatr_divide); ich($$, $1); ich($$, $3); }
+     | expr OP_REMAINDER expr { $$ = n(ast_operation, @$); vopt($$, operatr_remainder); ich($$, $1); ich($$, $3); }
+     | expr OP_ADDITION expr { $$ = n(ast_operation, @$); vopt($$, operatr_add); ich($$, $1); ich($$, $3); }
+     | expr OP_SUBTRACTION expr { $$ = n(ast_operation, @$); vopt($$, operatr_subtract); ich($$, $1); ich($$, $3); }
+     | expr OP_EQUAL_TO expr { $$ = n(ast_operation, @$); vopt($$, operatr_equal_to); ich($$, $1); ich($$, $3); }
+     | expr OP_NOT_EQUAL_TO expr { $$ = n(ast_operation, @$); vopt($$, operatr_not_equal_to); ich($$, $1); ich($$, $3); }
+     | expr OP_GREATER_THAN expr { $$ = n(ast_operation, @$); vopt($$, operatr_greater_than); ich($$, $1); ich($$, $3); }
+     | expr OP_LESS_THAN expr { $$ = n(ast_operation, @$); vopt($$, operatr_less_than); ich($$, $1); ich($$, $3); }
+     | expr OP_GREATER_THAN_OR_EQUAL_TO expr { $$ = n(ast_operation, @$); vopt($$, operatr_greater_than_or_equal_to); ich($$, $1); ich($$, $3); }
+     | expr OP_LESS_THAN_OR_EQUAL_TO expr { $$ = n(ast_operation, @$); vopt($$, operatr_less_than_or_equal_to); ich($$, $1); ich($$, $3); }
+     | expr OP_BINARY_AND expr { $$ = n(ast_operation, @$); vopt($$, operatr_binary_and); ich($$, $1); ich($$, $3); }
+     | expr OP_BINARY_OR expr { $$ = n(ast_operation, @$); vopt($$, operatr_binary_or); ich($$, $1); ich($$, $3); }
+     | expr OP_LOGICAL_AND expr { $$ = n(ast_operation, @$); vopt($$, operatr_logical_and); ich($$, $1); ich($$, $3); }
+     | expr OP_LOGICAL_OR expr { $$ = n(ast_operation, @$); vopt($$, operatr_logical_or); ich($$, $1); ich($$, $3); }
      | assign_stmt
      | array_assign_stmt
      | func_invo_stmt
@@ -419,9 +419,9 @@ literals : integer_literal
          | string_literal
          ;
 
-integer_literal : INTEGER_LITERAL { $$ = n(ast_integer, @$); vint($$, $1); } ;
-real_literal :    REAL_LITERAL    { $$ = n(ast_real, @$);    vstr($$, $1); } ;
-string_literal :  STRING_LITERAL  { $$ = n(ast_string, @$);  vstr($$, $1); } ;
+integer_literal : INTEGER_LITERAL { $$ = n(ast_integer_literal, @$); vint($$, $1); } ;
+real_literal :    REAL_LITERAL    { $$ = n(ast_real_literal, @$);    vstr($$, $1); } ;
+string_literal :  STRING_LITERAL  { $$ = n(ast_string_literal, @$);  vstr($$, $1); } ;
 
 %%
 

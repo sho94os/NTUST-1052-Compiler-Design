@@ -7,7 +7,7 @@
         "value": "n(id)",
         "children": [
           {
-            "type": "integer",
+            "type": "integer_literal",
             "value": 10
           }
         ]
@@ -17,7 +17,7 @@
         "value": "sum(id)",
         "children": [
           {
-            "type": "integer",
+            "type": "integer_literal",
             "value": 0
           }
         ]
@@ -44,14 +44,14 @@
                     "value": "index(id)",
                     "children": [
                       {
-                        "type": "integer",
+                        "type": "integer_literal",
                         "value": 0
                       }
                     ]
                   },
                   {
                     "type": "operation",
-                    "value": ""<="",
+                    "value": "less_than_or_equal_to",
                     "children": [
                       {
                         "type": "id",
@@ -75,7 +75,7 @@
                         "children": [
                           {
                             "type": "operation",
-                            "value": "+",
+                            "value": "add",
                             "children": [
                               {
                                 "type": "id",
@@ -95,14 +95,14 @@
                         "children": [
                           {
                             "type": "operation",
-                            "value": "+",
+                            "value": "add",
                             "children": [
                               {
                                 "type": "id",
                                 "value": "index(id)"
                               },
                               {
-                                "type": "integer",
+                                "type": "integer_literal",
                                 "value": 1
                               }
                             ]
@@ -117,7 +117,7 @@
                 "type": "print",
                 "children": [
                   {
-                    "type": "string",
+                    "type": "string_literal",
                     "value": "The sum is "
                   }
                 ]

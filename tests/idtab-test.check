@@ -7,6 +7,7 @@
 #test test_idtab_create
     idtab_t *t = idtab_create();
     ck_assert(!t->upper_idtab);
+    ck_assert_int_eq(t->size, 0);
 
 #test test_idtab_entry_idtab_create
     idtab_t *t = idtab_create();
@@ -15,6 +16,7 @@
     ck_assert_int_eq((int)st->upper_idtab, (int)t);
     ck_assert_int_eq((int)st->scope, (int)id);
     ck_assert_int_eq((int)id->scoped_idtab, (int)st);
+    ck_assert_int_eq(st->size, 0);
 
 #tcase Insertion and lookup of tables
 
@@ -29,17 +31,23 @@
     ck_assert_int_eq(foo->type, variable_identifier_type);
     ck_assert_str_eq(foo->identifier, "foo");
     ck_assert_int_eq(foo->value_type, int_value_type);
+    ck_assert_int_eq(foo->serial, 0);
 
     ck_assert_int_eq(bar->idtab, t);
     ck_assert_int_eq(bar->type, constant_identifier_type);
     ck_assert_str_eq(bar->identifier, "bar");
     ck_assert_int_eq(bar->value_type, bool_value_type);
+    ck_assert_int_eq(bar->serial, 1);
 
     ck_assert_int_ne((int)bar_bar, (int)bar);
     ck_assert_int_eq(bar_bar->idtab, bar_table);
-    ck_assert_int_eq(bar->type, constant_identifier_type);
-    ck_assert_str_eq(bar->identifier, "bar");
-    ck_assert_int_eq(bar->value_type, bool_value_type);
+    ck_assert_int_eq(bar_bar->type, constant_identifier_type);
+    ck_assert_str_eq(bar_bar->identifier, "bar");
+    ck_assert_int_eq(bar_bar->value_type, bool_value_type);
+    ck_assert_int_eq(bar_bar->serial, 0);
+
+    ck_assert_int_eq(t->size, 2);
+    ck_assert_int_eq(bar_table->size, 1);
 
 #test test_idtab_lookup
     idtab_t *t = idtab_create();

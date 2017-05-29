@@ -1,5 +1,6 @@
 /bin/parser
 /bin/scanner
+/bin/compiler
 /src/lex.yy.c
 /src/y.*
 /tests/*-check.c

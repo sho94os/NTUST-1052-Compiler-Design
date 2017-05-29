@@ -33,9 +33,9 @@
         AST_NODE_TYPE(ast_condition)               \
         AST_NODE_TYPE(ast_for_loop)                \
         AST_NODE_TYPE(ast_block)                   \
-        AST_NODE_TYPE(ast_integer)                 \
-        AST_NODE_TYPE(ast_real)                    \
-        AST_NODE_TYPE(ast_string)                  \
+        AST_NODE_TYPE(ast_integer_literal)         \
+        AST_NODE_TYPE(ast_real_literal)            \
+        AST_NODE_TYPE(ast_string_literal)          \
         AST_NODE_TYPE(ast_null)                    \
         AST_NODE_TYPE(ast_things)                  \
         AST_NODE_TYPE(ast_thing)
@@ -43,6 +43,31 @@
 typedef enum ast_node_type_e {
     AST_NODE_TYPES(GENERATE_ENUM_FOR_AST_NODE_TYPES)
 } ast_node_type_t;
+
+/* Define operator node types of the abstract syntax tree. */
+#define AST_NODE_OPERATR_VALUES(AST_NODE_OPERATR_VALUE)           \
+        AST_NODE_OPERATR_VALUE(operatr_unary)                     \
+        AST_NODE_OPERATR_VALUE(operatr_not)                       \
+        AST_NODE_OPERATR_VALUE(operatr_exponent)                  \
+        AST_NODE_OPERATR_VALUE(operatr_multiply)                  \
+        AST_NODE_OPERATR_VALUE(operatr_divide)                    \
+        AST_NODE_OPERATR_VALUE(operatr_remainder)                 \
+        AST_NODE_OPERATR_VALUE(operatr_add)                       \
+        AST_NODE_OPERATR_VALUE(operatr_subtract)                  \
+        AST_NODE_OPERATR_VALUE(operatr_equal_to)                  \
+        AST_NODE_OPERATR_VALUE(operatr_not_equal_to)              \
+        AST_NODE_OPERATR_VALUE(operatr_greater_than)              \
+        AST_NODE_OPERATR_VALUE(operatr_less_than)                 \
+        AST_NODE_OPERATR_VALUE(operatr_greater_than_or_equal_to)  \
+        AST_NODE_OPERATR_VALUE(operatr_less_than_or_equal_to)     \
+        AST_NODE_OPERATR_VALUE(operatr_binary_and)                \
+        AST_NODE_OPERATR_VALUE(operatr_binary_or)                 \
+        AST_NODE_OPERATR_VALUE(operatr_logical_and)               \
+        AST_NODE_OPERATR_VALUE(operatr_logical_or)
+#define GENERATE_ENUM_FOR_AST_OPERATR_VALUE(type_name) type_name,
+typedef enum ast_operatr_value_e {
+    AST_NODE_OPERATR_VALUES(GENERATE_ENUM_FOR_AST_OPERATR_VALUE)
+} ast_operatr_value_t;
 
 /* Possible value types for nodes of the abstract syntax tree. */
 typedef enum ast_node_value_type_e {
@@ -53,7 +78,7 @@ typedef enum ast_node_value_type_e {
 } ast_node_value_type_t;
 typedef union ast_node_value_u {
     const idtab_entry_t         *identifier;
-    int                         operatr;
+    ast_operatr_value_t         operatr;
     int                         integer;
     const char                  *string;
 } ast_node_value_t;
@@ -87,8 +112,14 @@ void ast_node_set_value_string(ast_node_t*, const char*);
 void ast_node_insert_child(ast_node_t*, ast_node_t *child);
 void ast_node_insert_sibling(ast_node_t*, ast_node_t *sibling);
 
+/* Get the nth child of a AST node. */
+ast_node_t* ast_node_get_child(ast_node_t*, int n);
+
 /* Get the name in a string of a AST node type. */
 const char* get_ast_node_type_name(ast_node_type_t);
+
+/* Get the name in a string of a AST node operator value. */
+const char* get_ast_node_operatr_value_name(ast_operatr_value_t);
 
 /* Dump all children under a AST node. */
 char* ast_dump_str(ast_node_t*);
