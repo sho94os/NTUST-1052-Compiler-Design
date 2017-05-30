@@ -37,7 +37,7 @@ LLVMValueRef get_print_i32_function(LLVMModuleRef module) {
     LLVMValueRef gep_printf_str_indices[2] = { LLVMConstInt(LLVMInt32Type(), 0, false), LLVMConstInt(LLVMInt32Type(), 0, false) };
     LLVMValueRef gep_printf_str = LLVMBuildInBoundsGEP(builder, printf_str, gep_printf_str_indices, 2, "");
     LLVMValueRef printf_func_args[2] = { gep_printf_str, LLVMGetParam(func, 0) };
-    LLVMBuildCall(builder, printf_func, printf_func_args, 2, "call");
+    LLVMBuildCall(builder, printf_func, printf_func_args, 2, "");
     LLVMBuildRetVoid(builder);
     return func;
 }
@@ -58,7 +58,7 @@ LLVMValueRef get_println_i32_function(LLVMModuleRef module) {
     LLVMValueRef gep_printf_str_indices[2] = { LLVMConstInt(LLVMInt32Type(), 0, false), LLVMConstInt(LLVMInt32Type(), 0, false) };
     LLVMValueRef gep_printf_str = LLVMBuildInBoundsGEP(builder, printf_str, gep_printf_str_indices, 2, "");
     LLVMValueRef printf_func_args[2] = { gep_printf_str, LLVMGetParam(func, 0) };
-    LLVMBuildCall(builder, printf_func, printf_func_args, 2, "call");
+    LLVMBuildCall(builder, printf_func, printf_func_args, 2, "");
     LLVMBuildRetVoid(builder);
     return func;
 }
@@ -74,23 +74,23 @@ LLVMValueRef get_print_str_function(LLVMModuleRef module) {
     LLVMPositionBuilderAtEnd(builder, block);
     LLVMValueRef printf_func = get_printf_function(module);
     LLVMValueRef printf_func_args[1] = { LLVMGetParam(func, 0) };
-    LLVMBuildCall(builder, printf_func, printf_func_args, 1, "call");
+    LLVMBuildCall(builder, printf_func, printf_func_args, 1, "");
     LLVMBuildRetVoid(builder);
     return func;
 }
 
 LLVMValueRef get_println_str_function(LLVMModuleRef module) {
-    LLVMValueRef func = LLVMGetNamedFunction(module, "__print_str");
+    LLVMValueRef func = LLVMGetNamedFunction(module, "__println_str");
     if (func) return func;
     LLVMTypeRef param_types[1] = { LLVMPointerType(LLVMInt8Type(), 0) };
     LLVMTypeRef func_type = LLVMFunctionType(LLVMVoidType(), param_types, 1, false);
-    func = LLVMAddFunction(module, "__print_str", func_type);
+    func = LLVMAddFunction(module, "__println_str", func_type);
     LLVMBasicBlockRef block = LLVMAppendBasicBlock(func, "entry");
     LLVMBuilderRef builder = LLVMCreateBuilder();
     LLVMPositionBuilderAtEnd(builder, block);
     LLVMValueRef printf_func = get_printf_function(module);
     LLVMValueRef printf_func_args[1] = { LLVMGetParam(func, 0) };
-    LLVMBuildCall(builder, printf_func, printf_func_args, 1, "call");
+    LLVMBuildCall(builder, printf_func, printf_func_args, 1, "");
 
     // Print '\n'
     LLVMValueRef printf_nl_str_const = LLVMConstString("\n", 3, false);
@@ -99,7 +99,7 @@ LLVMValueRef get_println_str_function(LLVMModuleRef module) {
     LLVMValueRef gep_printf_nl_str_indices[2] = { LLVMConstInt(LLVMInt32Type(), 0, false), LLVMConstInt(LLVMInt32Type(), 0, false) };
     LLVMValueRef gep_printf_nl_str = LLVMBuildInBoundsGEP(builder, printf_nl_str, gep_printf_nl_str_indices, 2, "");
     LLVMValueRef printf_nl_func_args[1] = { gep_printf_nl_str };
-    LLVMBuildCall(builder, printf_func, printf_nl_func_args, 1, "call");
+    LLVMBuildCall(builder, printf_func, printf_nl_func_args, 1, "");
 
     LLVMBuildRetVoid(builder);
     return func;
@@ -281,7 +281,7 @@ LLVMValueRef codegen_func_invo(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleR
     }
 
     LLVMValueRef func = (LLVMValueRef)ast_node->value.identifier->payload;
-    return LLVMBuildCall(builder, func, args, func_invo_arg_count, "call");
+    return LLVMBuildCall(builder, func, args, func_invo_arg_count, "");
 }
 
 LLVMValueRef codegen_print(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleRef module, LLVMBuilderRef builder) {
@@ -342,6 +342,9 @@ LLVMValueRef codegen_operation(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleR
         case operatr_exponent:
             break;
         case operatr_multiply:
+            lhs = codegen(ast_node_get_child(ast_node, 1), idtab, module, builder);
+            rhs = codegen(ast_node_get_child(ast_node, 2), idtab, module, builder);
+            return LLVMBuildMul(builder, lhs, rhs, "op");
             break;
         case operatr_divide:
             break;
@@ -353,6 +356,9 @@ LLVMValueRef codegen_operation(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleR
             return LLVMBuildAdd(builder, lhs, rhs, "op");
             break;
         case operatr_subtract:
+            lhs = codegen(ast_node_get_child(ast_node, 1), idtab, module, builder);
+            rhs = codegen(ast_node_get_child(ast_node, 2), idtab, module, builder);
+            return LLVMBuildSub(builder, lhs, rhs, "op");
             break;
         case operatr_equal_to:
             break;
