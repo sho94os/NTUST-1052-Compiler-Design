@@ -77,7 +77,7 @@ typedef enum ast_node_value_type_e {
     string       /* for real or string literals */
 } ast_node_value_type_t;
 typedef union ast_node_value_u {
-    const idtab_entry_t         *identifier;
+    idtab_entry_t               *identifier;
     ast_operatr_value_t         operatr;
     int                         integer;
     const char                  *string;
@@ -103,7 +103,7 @@ typedef struct ast_node_s {
 ast_node_t* new_ast_node(ast_node_type_t type, int line_num, int column_num);
 
 /* Set the value for a AST node. */
-void ast_node_set_value_identifier(ast_node_t*, const idtab_entry_t*);
+void ast_node_set_value_identifier(ast_node_t*, idtab_entry_t*);
 void ast_node_set_value_operatr(ast_node_t*, int);
 void ast_node_set_value_integer(ast_node_t*, int);
 void ast_node_set_value_string(ast_node_t*, const char*);

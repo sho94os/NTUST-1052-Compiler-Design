@@ -24,7 +24,7 @@ bin/scanner: src/standalone_scanner.o src/tokens.o src/symtab.o
 	gcc $(CFLAGS) -o $@ $^ -ll -lm
 
 src/compiler.o: src/compiler.c src/y.tab.c
-	gcc $(CFLAGS) -o $@ -c $< `$(LLVM_CONFIG) --cflags`
+	gcc $(CFLAGS) -w -o $@ -c $< `$(LLVM_CONFIG) --cflags`
 
 src/standalone_parser.o: src/standalone_parser.c src/y.tab.c
 	gcc $(CFLAGS) -o $@ -c $<
@@ -51,13 +51,13 @@ src/%.o: src/%.c src/%.h src/y.tab.h
 	$<
 
 compiler-test: bin/compiler
-	tests/compiler-test.bats
+	tests/compiler-test.bats && echo
 
 parser-test: bin/parser
-	tests/parser-test.bats
+	tests/parser-test.bats && echo
 
 scanner-test: bin/scanner
-	tests/scanner-test.bats
+	tests/scanner-test.bats && echo
 
 tests/%-check: src/%.o tests/%-check.o src/tokens.o
 	gcc $(CFLAGS) -w $^ -o $@ `pkg-config --cflags --libs check`

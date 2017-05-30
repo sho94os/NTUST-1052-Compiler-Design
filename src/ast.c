@@ -22,7 +22,7 @@ ast_node_t* new_ast_node(ast_node_type_t type, int line_num, int column_num) {
     return ast_node;
 }
 
-void ast_node_set_value_identifier(ast_node_t *ast_node, const idtab_entry_t *idtab_entry) {
+void ast_node_set_value_identifier(ast_node_t *ast_node, idtab_entry_t *idtab_entry) {
     ast_node->has_value = true;
     ast_node->value_type = identifier;
     ast_node->value.identifier = idtab_entry;

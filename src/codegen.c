@@ -136,12 +136,27 @@ LLVMValueRef codegen_program(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleRef
         while (entry) {
             LLVMValueRef glob;
             switch (entry->value_type) {
-                case integer:
+                case void_value_type:
+                    // TODO
+                    break;
+                case bool_value_type:
+                    // TODO
+                    break;
+                case int_value_type:
                     glob = LLVMAddGlobal(module, LLVMInt32Type(), "glob_int");
                     entry->payload = (void*)glob;
 
                     // LLVM global must be initlized
                     LLVMSetInitializer(glob, LLVMConstInt(LLVMInt32Type(), 0, false));
+                    break;
+                case real_value_type:
+                    // TODO
+                    break;
+                case string_value_type:
+                    // TODO
+                    break;
+                case unknown_value_type:
+                    // TODO
                     break;
             }
             entry = entry->next;
@@ -195,8 +210,23 @@ LLVMValueRef codegen_func_def(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleRe
             } else {
                 // Local var
                 switch (entry->value_type) {
-                    case integer:
+                    case void_value_type:
+                        // TODO
+                        break;
+                    case bool_value_type:
+                        // TODO
+                        break;
+                    case int_value_type:
                         entry->payload = (void*)LLVMBuildAlloca(builder, LLVMInt32Type(), "var");
+                        break;
+                    case real_value_type:
+                        // TODO
+                        break;
+                    case string_value_type:
+                        // TODO
+                        break;
+                    case unknown_value_type:
+                        // TODO
                         break;
                 }
             }
@@ -285,16 +315,38 @@ LLVMValueRef codegen_func_invo(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleR
 }
 
 LLVMValueRef codegen_print(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleRef module, LLVMBuilderRef builder) {
-    LLVMValueRef func;
+    LLVMValueRef func = NULL;
 
     LLVMValueRef args[1] = { codegen(ast_node_get_child(ast_node, 1), idtab, module, builder) };
 
     switch (LLVMGetTypeKind(LLVMTypeOf(args[0]))) {
+        case LLVMVoidTypeKind:
+            // TODO
+            break;
         case LLVMIntegerTypeKind:
             func = get_print_i32_function(module);
             break;
+        case LLVMFunctionTypeKind:
+            // TODO
+            break;
+        case LLVMStructTypeKind:
+            // TODO
+            break;
+        case LLVMArrayTypeKind:
+            // TODO
+            break;
         case LLVMPointerTypeKind:
+            // TODO: Handle non-char pointer
             func = get_print_str_function(module);
+            break;
+        case LLVMVectorTypeKind:
+            // TODO
+            break;
+        case LLVMMetadataTypeKind:
+            // TODO
+            break;
+        default:
+            // TODO
             break;
     }
 
@@ -302,16 +354,38 @@ LLVMValueRef codegen_print(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleRef m
 }
 
 LLVMValueRef codegen_println(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleRef module, LLVMBuilderRef builder) {
-    LLVMValueRef func;
+    LLVMValueRef func = NULL;
 
     LLVMValueRef args[1] = { codegen(ast_node_get_child(ast_node, 1), idtab, module, builder) };
 
     switch (LLVMGetTypeKind(LLVMTypeOf(args[0]))) {
+        case LLVMVoidTypeKind:
+            // TODO
+            break;
         case LLVMIntegerTypeKind:
             func = get_println_i32_function(module);
             break;
+        case LLVMFunctionTypeKind:
+            // TODO
+            break;
+        case LLVMStructTypeKind:
+            // TODO
+            break;
+        case LLVMArrayTypeKind:
+            // TODO
+            break;
         case LLVMPointerTypeKind:
+            // TODO: Handle non-char pointer
             func = get_println_str_function(module);
+            break;
+        case LLVMVectorTypeKind:
+            // TODO
+            break;
+        case LLVMMetadataTypeKind:
+            // TODO
+            break;
+        default:
+            // TODO
             break;
     }
 
@@ -338,8 +412,10 @@ LLVMValueRef codegen_operation(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleR
             return LLVMBuildNeg(builder, rhs, "op");
             break;
         case operatr_not:
+            // TODO
             break;
         case operatr_exponent:
+            // TODO
             break;
         case operatr_multiply:
             lhs = codegen(ast_node_get_child(ast_node, 1), idtab, module, builder);
@@ -347,8 +423,10 @@ LLVMValueRef codegen_operation(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleR
             return LLVMBuildMul(builder, lhs, rhs, "op");
             break;
         case operatr_divide:
+            // TODO
             break;
         case operatr_remainder:
+            // TODO
             break;
         case operatr_add:
             lhs = codegen(ast_node_get_child(ast_node, 1), idtab, module, builder);
@@ -361,8 +439,10 @@ LLVMValueRef codegen_operation(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleR
             return LLVMBuildSub(builder, lhs, rhs, "op");
             break;
         case operatr_equal_to:
+            // TODO
             break;
         case operatr_not_equal_to:
+            // TODO
             break;
         case operatr_greater_than:
             lhs = codegen(ast_node_get_child(ast_node, 1), idtab, module, builder);
@@ -370,18 +450,25 @@ LLVMValueRef codegen_operation(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleR
             return LLVMBuildICmp(builder, LLVMIntSGT, lhs, rhs, "cmp");
             break;
         case operatr_less_than:
+            // TODO
             break;
         case operatr_greater_than_or_equal_to:
+            // TODO
             break;
         case operatr_less_than_or_equal_to:
+            // TODO
             break;
         case operatr_binary_and:
+            // TODO
             break;
         case operatr_binary_or:
+            // TODO
             break;
         case operatr_logical_and:
+            // TODO
             break;
         case operatr_logical_or:
+            // TODO
             break;
     }
 
@@ -465,18 +552,20 @@ LLVMValueRef codegen(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleRef module,
             return codegen_func_def(ast_node, idtab, module, builder);
             break;
         case ast_func_args:
-            break;
         case ast_func_arg:
+            // Function arg AST nodes will not be codegen directly
             break;
         case ast_func_body:
             return codegen_func_body(ast_node, idtab, module, builder);
             break;
         case ast_const_dec:
+            // TODO
             break;
         case ast_var_dec:
             return codegen_var_dec(ast_node, idtab, module, builder);
             break;
         case ast_arr_dec:
+            // TODO
             break;
         case ast_id:
             return codegen_id(ast_node, idtab, module, builder);
@@ -488,8 +577,10 @@ LLVMValueRef codegen(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleRef module,
             return codegen_func_invo(ast_node, idtab, module, builder);
             break;
         case ast_func_invo_args:
+            // Function invoke arg AST nodes will not be codegen directly
             break;
         case ast_arr_assign:
+            // TODO
             break;
         case ast_print:
             return codegen_print(ast_node, idtab, module, builder);
@@ -498,6 +589,7 @@ LLVMValueRef codegen(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleRef module,
             return codegen_println(ast_node, idtab, module, builder);
             break;
         case ast_read:
+            // TODO
             break;
         case ast_return:
             return codegen_return(ast_node, idtab, module, builder);
@@ -509,6 +601,7 @@ LLVMValueRef codegen(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleRef module,
             return codegen_condition(ast_node, idtab, module, builder);
             break;
         case ast_for_loop:
+            // TODO
             break;
         case ast_block:
             return codegen_block(ast_node, idtab, module, builder);
@@ -517,6 +610,7 @@ LLVMValueRef codegen(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleRef module,
             return codegen_integer_literal(ast_node, idtab, module, builder);
             break;
         case ast_real_literal:
+            // TODO
             break;
         case ast_string_literal:
             return codegen_string_literal(ast_node, idtab, module, builder);

@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <llvm-c/Transforms/Scalar.h>
+
 #include "y.tab.c"
 #include "ast.h"
 #include "codegen.h"

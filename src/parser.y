@@ -4,6 +4,9 @@
 #include "ast.h"
 #include "idtab.h"
 
+extern int yyparse();
+extern int yyerror(const char* msg);
+
 #ifdef STANDALONE_PARSER
 #else
 #endif
@@ -425,7 +428,7 @@ string_literal :  STRING_LITERAL  { $$ = n(ast_string_literal, @$);  vstr($$, $1
 
 %%
 
-int yyerror(char *msg) {
+int yyerror(const char *msg) {
     fprintf(stderr, "%s around line %d, cloumn %d\n", msg, yylloc.first_line, yylloc.first_column);
     has_error = true;
     return 0;
