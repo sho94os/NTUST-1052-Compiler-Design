@@ -44,7 +44,7 @@ typedef enum ast_node_type_e {
     AST_NODE_TYPES(GENERATE_ENUM_FOR_AST_NODE_TYPES)
 } ast_node_type_t;
 
-/* Define operator node types of the abstract syntax tree. */
+/* Define operator node values of the abstract syntax tree. */
 #define AST_NODE_OPERATR_VALUES(AST_NODE_OPERATR_VALUE)           \
         AST_NODE_OPERATR_VALUE(operatr_unary)                     \
         AST_NODE_OPERATR_VALUE(operatr_not)                       \
