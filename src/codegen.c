@@ -412,7 +412,8 @@ LLVMValueRef codegen_operation(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleR
             return LLVMBuildNeg(builder, rhs, "op");
             break;
         case operatr_not:
-            // TODO
+            rhs = codegen(ast_node_get_child(ast_node, 1), idtab, module, builder);
+            return LLVMBuildNot(builder, rhs, "op");
             break;
         case operatr_exponent:
             // TODO
@@ -423,10 +424,14 @@ LLVMValueRef codegen_operation(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleR
             return LLVMBuildMul(builder, lhs, rhs, "op");
             break;
         case operatr_divide:
-            // TODO
+            lhs = codegen(ast_node_get_child(ast_node, 1), idtab, module, builder);
+            rhs = codegen(ast_node_get_child(ast_node, 2), idtab, module, builder);
+            return LLVMBuildSDiv(builder, lhs, rhs, "op");
             break;
         case operatr_remainder:
-            // TODO
+            lhs = codegen(ast_node_get_child(ast_node, 1), idtab, module, builder);
+            rhs = codegen(ast_node_get_child(ast_node, 2), idtab, module, builder);
+            return LLVMBuildSRem(builder, lhs, rhs, "op");
             break;
         case operatr_add:
             lhs = codegen(ast_node_get_child(ast_node, 1), idtab, module, builder);
@@ -439,10 +444,14 @@ LLVMValueRef codegen_operation(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleR
             return LLVMBuildSub(builder, lhs, rhs, "op");
             break;
         case operatr_equal_to:
-            // TODO
+            lhs = codegen(ast_node_get_child(ast_node, 1), idtab, module, builder);
+            rhs = codegen(ast_node_get_child(ast_node, 2), idtab, module, builder);
+            return LLVMBuildICmp(builder, LLVMIntEQ, lhs, rhs, "cmp");
             break;
         case operatr_not_equal_to:
-            // TODO
+            lhs = codegen(ast_node_get_child(ast_node, 1), idtab, module, builder);
+            rhs = codegen(ast_node_get_child(ast_node, 2), idtab, module, builder);
+            return LLVMBuildICmp(builder, LLVMIntNE, lhs, rhs, "cmp");
             break;
         case operatr_greater_than:
             lhs = codegen(ast_node_get_child(ast_node, 1), idtab, module, builder);
@@ -450,13 +459,19 @@ LLVMValueRef codegen_operation(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleR
             return LLVMBuildICmp(builder, LLVMIntSGT, lhs, rhs, "cmp");
             break;
         case operatr_less_than:
-            // TODO
+            lhs = codegen(ast_node_get_child(ast_node, 1), idtab, module, builder);
+            rhs = codegen(ast_node_get_child(ast_node, 2), idtab, module, builder);
+            return LLVMBuildICmp(builder, LLVMIntSLT, lhs, rhs, "cmp");
             break;
         case operatr_greater_than_or_equal_to:
-            // TODO
+            lhs = codegen(ast_node_get_child(ast_node, 1), idtab, module, builder);
+            rhs = codegen(ast_node_get_child(ast_node, 2), idtab, module, builder);
+            return LLVMBuildICmp(builder, LLVMIntSGE, lhs, rhs, "cmp");
             break;
         case operatr_less_than_or_equal_to:
-            // TODO
+            lhs = codegen(ast_node_get_child(ast_node, 1), idtab, module, builder);
+            rhs = codegen(ast_node_get_child(ast_node, 2), idtab, module, builder);
+            return LLVMBuildICmp(builder, LLVMIntSLE, lhs, rhs, "cmp");
             break;
         case operatr_binary_and:
             // TODO
@@ -465,10 +480,14 @@ LLVMValueRef codegen_operation(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleR
             // TODO
             break;
         case operatr_logical_and:
-            // TODO
+            lhs = codegen(ast_node_get_child(ast_node, 1), idtab, module, builder);
+            rhs = codegen(ast_node_get_child(ast_node, 2), idtab, module, builder);
+            return LLVMBuildAnd(builder, lhs, rhs, "op");
             break;
         case operatr_logical_or:
-            // TODO
+            lhs = codegen(ast_node_get_child(ast_node, 1), idtab, module, builder);
+            rhs = codegen(ast_node_get_child(ast_node, 2), idtab, module, builder);
+            return LLVMBuildOr(builder, lhs, rhs, "op");
             break;
     }
 
@@ -514,6 +533,44 @@ LLVMValueRef codegen_condition(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleR
     LLVMPositionBuilderAtEnd(builder, cont_block);
 
     return cond_br;
+}
+
+LLVMValueRef codegen_for_loop(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleRef module, LLVMBuilderRef builder) {
+    // Get elements
+    LLVMValueRef current_func = (LLVMValueRef)idtab->scope->payload;
+    ast_node_t *ast_init_node = ast_node_get_child(ast_node, 1);
+    ast_node_t *ast_cond_node = ast_node_get_child(ast_node, 2);
+    ast_node_t *ast_update_node = ast_node_get_child(ast_node, 3);
+    ast_node_t *ast_body_node = ast_node_get_child(ast_node, 4);
+
+    // Generate code for init and condition
+    if (ast_init_node) codegen(ast_init_node, idtab, module, builder);
+    LLVMValueRef first_cond = codegen(ast_cond_node, idtab, module, builder);
+
+    // Prepare blocks
+    LLVMBasicBlockRef loop_block = LLVMAppendBasicBlock(current_func, "loop");
+    LLVMBasicBlockRef loop_cont_block = LLVMAppendBasicBlock(current_func, "loop_cont");
+    LLVMBasicBlockRef cont_block = LLVMAppendBasicBlock(current_func, "cont");
+
+    // Generate condition br
+    LLVMValueRef first_cond_br = LLVMBuildCondBr(builder, first_cond, loop_block, cont_block);
+
+    // Fill the loop block
+    LLVMPositionBuilderAtEnd(builder, loop_block);
+    if (ast_body_node) codegen(ast_body_node, idtab, module, builder);
+    LLVMBuildBr(builder, loop_cont_block);
+
+    // Fill the loop continue block
+    LLVMPositionBuilderAtEnd(builder, loop_cont_block);
+    codegen(ast_update_node, idtab, module, builder);
+    LLVMValueRef loop_cond = codegen(ast_cond_node, idtab, module, builder);
+    LLVMValueRef loop_cond_br = LLVMBuildCondBr(builder, loop_cond, loop_block, cont_block);
+    LLVMBuildBr(builder, loop_cont_block);
+
+    // Position the builder to the continuing block
+    LLVMPositionBuilderAtEnd(builder, cont_block);
+
+    return first_cond_br;
 }
 
 LLVMValueRef codegen_block(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleRef module, LLVMBuilderRef builder) {
@@ -601,7 +658,7 @@ LLVMValueRef codegen(ast_node_t *ast_node, idtab_t *idtab, LLVMModuleRef module,
             return codegen_condition(ast_node, idtab, module, builder);
             break;
         case ast_for_loop:
-            // TODO
+            return codegen_for_loop(ast_node, idtab, module, builder);
             break;
         case ast_block:
             return codegen_block(ast_node, idtab, module, builder);
